@@ -1,0 +1,89 @@
+name: Update Weather
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # every hour
+  workflow_dispatch:        # manual trigger button in GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch weather and update dashboard
+        run: |
+          python3 - << 'PYEOF'
+          import urllib.request, json, datetime, re
+
+          # Fetch from open-meteo (no TLS issues on GitHub's servers)
+          url = (
+            'https://api.open-meteo.com/v1/forecast'
+            '?latitude=50.0755&longitude=14.4378'
+            '&current_weather=true'
+            '&hourly=relativehumidity_2m,apparent_temperature,windspeed_10m,temperature_2m,weathercode'
+            '&timezone=Europe%2FPrague'
+            '&forecast_days=1'
+          )
+          with urllib.request.urlopen(url) as r:
+            d = json.loads(r.read())
+
+          cw = d['current_weather']
+          temp    = str(round(cw['temperature']))
+          wind    = str(round(cw['windspeed']))
+          code    = int(cw['weathercode'])
+
+          now_h = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).hour
+          hourly  = d['hourly']
+          times   = hourly['time']
+          temps   = hourly['temperature_2m']
+          codes   = hourly['weathercode']
+          humids  = hourly['relativehumidity_2m']
+          feels_l = hourly['apparent_temperature']
+
+          humidity = str(humids[now_h]) if now_h < len(humids) else '—'
+          feels    = str(round(feels_l[now_h])) if now_h < len(feels_l) else '—'
+
+          # Build 6-slot hourly forecast from now
+          forecast = []
+          for i, t in enumerate(times):
+            h = int(t.split('T')[1].split(':')[0])
+            if h < now_h:
+              continue
+            label = 'Сейчас' if len(forecast) == 0 else f"{h:02d}:00"
+            forecast.append({'label': label, 'temp': round(temps[i]), 'code': int(codes[i])})
+            if len(forecast) >= 6:
+              break
+
+          updated_at = datetime.datetime.now(
+            datetime.timezone(datetime.timedelta(hours=2))
+          ).strftime('%d.%m %H:%M')
+
+          forecast_json = json.dumps(forecast, ensure_ascii=False)
+
+          # Read dashboard
+          with open('index.html', 'r', encoding='utf-8') as f:
+            html = f.read()
+
+          # Replace markers
+          html = re.sub(r"temp: '__TEMP__'",       f"temp: '{temp}'",       html)
+          html = re.sub(r"feels: '__FEELS__'",     f"feels: '{feels}'",     html)
+          html = re.sub(r"humidity: '__HUMIDITY__'",f"humidity: '{humidity}'",html)
+          html = re.sub(r"wind: '__WIND__'",       f"wind: '{wind}'",       html)
+          html = re.sub(r"code: __CODE__",         f"code: {code}",         html)
+          html = re.sub(r"updatedAt: '__UPDATED_AT__'", f"updatedAt: '{updated_at}'", html)
+          html = re.sub(r"forecast: __FORECAST__", f"forecast: {forecast_json}", html)
+
+          with open('index.html', 'w', encoding='utf-8') as f:
+            f.write(html)
+
+          print(f"Done: {temp}°C, code={code}, forecast={len(forecast)} slots")
+          PYEOF
+
+      - name: Commit updated dashboard
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "weather: auto-update $(date -u +'%H:%M UTC')"
+          git push

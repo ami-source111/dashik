@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Dashboard">
 <title>Home Dashboard</title>
+<!-- BUILD: v4 worker 2026-04-05 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
@@ -560,6 +561,7 @@ body:before {
   <div class="status-row">
     <div class="status-dot"></div>
     <span id="status-time">обновлено только что</span>
+    <span style="margin-left:12px;opacity:0.4">v4</span>
   </div>
 
 </div>
@@ -588,21 +590,18 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ─── WEATHER ─────────────────────────────────────────────
-// wttr.in weather codes
+// WMO weather codes (open-meteo)
 var WMO_ICONS = {
-  113:'☀️', 116:'⛅', 119:'☁️', 122:'☁️',
-  143:'🌫', 248:'🌫', 260:'🌫',
-  176:'🌦', 179:'🌨', 182:'🌧', 185:'🌧',
-  200:'⛈', 227:'❄️', 230:'❄️',
-  263:'🌦', 266:'🌦', 281:'🌧', 284:'🌧',
-  293:'🌦', 296:'🌦', 299:'🌧', 302:'🌧', 305:'🌧', 308:'🌧',
-  311:'🌧', 314:'🌧', 317:'🌨', 320:'🌨',
-  323:'🌨', 326:'🌨', 329:'❄️', 332:'❄️', 335:'❄️', 338:'❄️',
-  350:'🌧', 353:'🌦', 356:'🌧', 359:'🌧',
-  362:'🌨', 365:'🌨', 368:'🌨', 371:'❄️', 374:'🌨', 377:'🌨',
-  386:'⛈', 389:'⛈', 392:'⛈', 395:'❄️'
-};
-
+  0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️',
+  45:'🌫', 48:'🌫',
+  51:'🌦', 53:'🌦', 55:'🌧',
+  61:'🌧', 63:'🌧', 65:'🌧',
+  71:'❄️', 73:'❄️', 75:'❄️',
+  77:'🌨',
+  80:'🌦', 81:'🌧', 82:'⛈',
+  85:'🌨', 86:'🌨',
+  95:'⛈', 96:'⛈', 99:'⛈'
+}
 var WMO_DESC = {
   113:'Ясно', 116:'Переменная облачность', 119:'Облачно', 122:'Пасмурно',
   143:'Туман', 248:'Туман', 260:'Туман',
@@ -654,7 +653,7 @@ function renderWeather(temp, code, wind, humidity, feels, hourlySlots) {
 
 function loadWeather() {
   var xhr = new XMLHttpRequest();
-  var url = 'https://wttr.in/Prague?format=j1';
+  var url = 'https://summer-rain-80bb.amirovnebusice.workers.dev/';
 
   xhr.open('GET', url, true);
   xhr.timeout = 10000;
@@ -673,42 +672,28 @@ function loadWeather() {
     }
     try {
       var d = JSON.parse(xhr.responseText);
-      var cc = d.current_condition[0];
-      var temp = cc.temp_C;
-      var feels = cc.FeelsLikeC;
-      var humidity = cc.humidity;
-      var wind = cc.windspeedKmph;
-      var code = parseInt(cc.weatherCode);
+      var cw = d.current_weather;
+      var code = cw.weathercode;
+      var temp = Math.round(cw.temperature);
+      var wind = Math.round(cw.windspeed);
+      var nowH = new Date().getHours();
+      var humidity = d.hourly && d.hourly.relativehumidity_2m ? (d.hourly.relativehumidity_2m[nowH] || '—') : '—';
+      var feelsRaw = d.hourly && d.hourly.apparent_temperature ? d.hourly.apparent_temperature[nowH] : null;
+      var feels = feelsRaw !== null && feelsRaw !== undefined ? Math.round(feelsRaw) : '—';
 
-      // hourly: wttr gives 8 slots per day at 0,3,6,9,12,15,18,21h
-      var now = new Date();
-      var nowH = now.getHours();
-      var todayHourly = d.weather[0].hourly;
+      // hourly forecast: next 6 hours from now
       var slots = [];
-
-      // find current and next slots
-      for (var i = 0; i < todayHourly.length; i++) {
-        var slotH = parseInt(todayHourly[i].time) / 100;
-        if (slotH < nowH - 1) continue;
-        if (slots.length >= 6) break;
-        var label = slots.length === 0 ? 'Сейчас' : (slotH < 10 ? '0' + slotH : slotH) + ':00';
+      var times = d.hourly && d.hourly.time ? d.hourly.time : [];
+      var temps = d.hourly && d.hourly.temperature_2m ? d.hourly.temperature_2m : [];
+      var codes = d.hourly && d.hourly.weathercode ? d.hourly.weathercode : [];
+      for (var i = 0; i < times.length && slots.length < 6; i++) {
+        var h = parseInt(times[i].split('T')[1].split(':')[0]);
+        if (h < nowH) continue;
         slots.push({
-          label: label,
-          temp: todayHourly[i].tempC,
-          code: parseInt(todayHourly[i].weatherCode)
+          label: slots.length === 0 ? 'Сейчас' : (h < 10 ? '0' + h : '' + h) + ':00',
+          temp: Math.round(temps[i]),
+          code: codes[i]
         });
-      }
-      // fill from tomorrow if not enough
-      if (slots.length < 6 && d.weather[1]) {
-        var tmrHourly = d.weather[1].hourly;
-        for (var j = 0; j < tmrHourly.length && slots.length < 6; j++) {
-          var th = parseInt(tmrHourly[j].time) / 100;
-          slots.push({
-            label: (th < 10 ? '0' + th : th) + ':00',
-            temp: tmrHourly[j].tempC,
-            code: parseInt(tmrHourly[j].weatherCode)
-          });
-        }
       }
 
       renderWeather(temp, code, wind, humidity, feels, slots);
@@ -733,7 +718,6 @@ function loadWeather() {
 
 loadWeather();
 setInterval(loadWeather, 10 * 60 * 1000);
-
 // ─── BUS SCHEDULE ─────────────────────────────────────────
 // Static schedule: route 161 and 312 from Škola Nebušice toward Bořislavka
 // Weekday schedule (approximate, update as needed)

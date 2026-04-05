@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=768, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Dashboard">
@@ -10,7 +10,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Home Dashboard</title>
-<!-- BUILD: v6 2026-04-05 -->
+<!-- BUILD: v7 landscape 2026-04-05 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
@@ -21,18 +21,17 @@
   padding: 0;
 }
 
-body {
+html, body {
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
   background: #0a0c0f;
   color: #e8e8e8;
   font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 300;
-  width: 768px;
-  min-height: 1024px;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── BACKGROUND TEXTURE ─── */
 body:before {
   content: '';
   position: fixed;
@@ -44,32 +43,51 @@ body:before {
   z-index: 0;
 }
 
-.container {
+/* ─── LAYOUT ─── */
+.page {
   position: relative;
   z-index: 1;
-  padding: 28px 24px 24px;
+  width: 1024px;
+  height: 768px;
+  padding: 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* ─── TIME & DATE ─── */
-.clock-block {
-  text-align: center;
-  padding-bottom: 20px;
+/* top: clock full width */
+.top-bar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  padding: 0 4px 12px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
-  margin-bottom: 20px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .clock-time {
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
-  font-size: 96px;
+  font-family: 'Oswald', Arial, sans-serif;
+  font-size: 72px;
   font-weight: 300;
-  letter-spacing: -2px;
   color: #ffffff;
   line-height: 1;
+  letter-spacing: -2px;
   text-shadow: 0 0 60px rgba(100,180,255,0.2);
 }
 
 .clock-time .colon {
-  opacity: 1;
   -webkit-animation: blink 1s step-end infinite;
   animation: blink 1s step-end infinite;
 }
@@ -84,32 +102,81 @@ body:before {
 }
 
 .clock-date {
-  font-size: 18px;
-  color: rgba(255,255,255,0.45);
+  font-size: 15px;
+  color: rgba(255,255,255,0.4);
   letter-spacing: 3px;
   text-transform: uppercase;
-  margin-top: 6px;
-  font-weight: 400;
+  text-align: right;
 }
 
-/* ─── SECTION CARDS ─── */
+.status-info {
+  text-align: right;
+}
+
+/* columns */
+.columns {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  gap: 12px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  min-height: 0;
+}
+
+.col-left {
+  width: 420px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.col-right {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── CARDS ─── */
 .card {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 18px 20px;
-  margin-bottom: 16px;
-  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.card-grow {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .card-header {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.3);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 /* ─── WEATHER ─── */
@@ -127,36 +194,39 @@ body:before {
 
 .weather-temp {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 64px;
+  font-size: 52px;
   font-weight: 300;
   color: #ffffff;
   line-height: 1;
 }
 
 .weather-temp sup {
-  font-size: 28px;
+  font-size: 22px;
   vertical-align: top;
-  margin-top: 8px;
+  margin-top: 6px;
   display: inline-block;
   color: rgba(255,255,255,0.6);
 }
 
-.weather-icon {
-  font-size: 56px;
-  line-height: 1;
+.weather-icon { font-size: 44px; line-height: 1; }
+
+.weather-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
 }
 
 .weather-details {
-  margin-top: 12px;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  gap: 20px;
+  gap: 14px;
+  margin-top: 8px;
 }
 
 .weather-detail {
-  font-size: 14px;
-  color: rgba(255,255,255,0.45);
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
 }
 
 .weather-detail span {
@@ -164,21 +234,13 @@ body:before {
   font-weight: 400;
 }
 
-.weather-desc {
-  font-size: 16px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 4px;
-}
-
-/* ─── HOURLY FORECAST STRIP ─── */
 .forecast-strip {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(255,255,255,0.07);
-  overflow: hidden;
 }
 
 .fc-slot {
@@ -189,32 +251,30 @@ body:before {
 }
 
 .fc-label {
-  font-size: 11px;
+  font-size: 10px;
   color: rgba(255,255,255,0.3);
   letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.fc-slot:first-child .fc-label {
-  color: rgba(255,255,255,0.55);
-  font-weight: 600;
-}
+.fc-slot:first-child .fc-label { color: rgba(255,255,255,0.6); font-weight: 600; }
 
-.fc-icon {
-  font-size: 20px;
-  line-height: 1.3;
-}
+.fc-icon { font-size: 18px; line-height: 1.3; }
 
 .fc-temp {
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(255,255,255,0.8);
-  margin-top: 3px;
+  margin-top: 2px;
   font-family: 'Roboto Mono', 'Courier New', monospace;
 }
 
-.fc-slot:first-child .fc-temp {
-  color: #ffffff;
-  font-weight: 400;
+.fc-slot:first-child .fc-temp { color: #ffffff; }
+
+.weather-updated {
+  font-size: 10px;
+  color: rgba(255,255,255,0.18);
+  margin-top: 6px;
+  text-align: right;
 }
 
 /* ─── BUSES ─── */
@@ -225,140 +285,75 @@ body:before {
   -webkit-box-align: center;
   -webkit-align-items: center;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.bus-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.bus-row:first-child {
-  padding-top: 0;
-}
+.bus-row:last-of-type { border-bottom: none; }
 
 .bus-badge {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  width: 52px;
-  height: 32px;
-  line-height: 32px;
+  width: 46px;
+  height: 28px;
+  line-height: 28px;
   text-align: center;
   border-radius: 6px;
-  margin-right: 14px;
+  margin-right: 10px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
 
-.bus-badge.b161 {
-  background: #1a4a8a;
-  color: #7bb8ff;
-  border: 1px solid #2a6acf;
-}
-
-.bus-badge.b312 {
-  background: #1a5a3a;
-  color: #5dcc88;
-  border: 1px solid #2a8a5a;
-}
-
-.bus-dest {
-  font-size: 15px;
-  color: rgba(255,255,255,0.6);
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-}
+.bus-badge.b161 { background: #1a4a8a; color: #7bb8ff; border: 1px solid #2a6acf; }
+.bus-badge.b312 { background: #1a5a3a; color: #5dcc88; border: 1px solid #2a8a5a; }
 
 .bus-next {
-  font-size: 16px;
+  font-size: 14px;
   color: rgba(255,255,255,0.35);
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   flex: 1;
-  padding-left: 2px;
 }
 
-.bus-next.soon {
-  color: #ff9444;
-}
-
-.bus-next.very-soon {
-  color: #ff4444;
-  font-weight: 600;
-}
+.bus-next.soon { color: #ff9444; }
+.bus-next.very-soon { color: #ff4444; font-weight: 600; }
 
 .bus-times {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  gap: 10px;
+  gap: 6px;
 }
 
 .bus-time {
   font-family: 'Roboto Mono', 'Courier New', monospace;
   color: #ffffff;
   background: rgba(255,255,255,0.08);
-  padding: 5px 10px;
-  border-radius: 6px;
+  padding: 4px 8px;
+  border-radius: 5px;
   text-align: center;
-  min-width: 88px;
+  min-width: 52px;
 }
 
-.bus-hhmm {
-  display: block;
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.2;
-}
-
-.bus-min {
-  display: block;
-  font-size: 10px;
-  color: rgba(255,255,255,0.4);
-  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-  letter-spacing: 0.3px;
-  margin-top: 1px;
-}
-
-.bus-time.soon {
-  color: #ff9444;
-  background: rgba(255,148,68,0.12);
-}
-
-.bus-time.soon .bus-min {
-  color: rgba(255,148,68,0.6);
-}
-
-.bus-time.very-soon {
-  color: #ff4444;
-  background: rgba(255,68,68,0.12);
-}
-
-.bus-time.very-soon .bus-min {
-  color: rgba(255,68,68,0.7);
-}
+.bus-hhmm { display: block; font-size: 14px; font-weight: 400; line-height: 1.2; }
+.bus-time.soon { color: #ff9444; background: rgba(255,148,68,0.12); }
+.bus-time.very-soon { color: #ff4444; background: rgba(255,68,68,0.12); }
 
 .bus-updated {
-  font-size: 11px;
-  color: rgba(255,255,255,0.2);
-  margin-top: 10px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.18);
+  margin-top: 6px;
   text-align: right;
 }
 
-/* ─── ALISA SCHEDULE ─── */
-.schedule-today {
-  margin-bottom: 6px;
-}
-
+/* ─── SCHEDULE ─── */
 .schedule-day-label {
-  font-size: 12px;
+  font-size: 10px;
   color: rgba(255,255,255,0.25);
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .schedule-item {
@@ -368,120 +363,114 @@ body:before {
   -webkit-box-align: start;
   -webkit-align-items: flex-start;
   align-items: flex-start;
-  padding: 8px 0;
+  padding: 5px 0;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 
-.schedule-item:last-child {
-  border-bottom: none;
-}
-
-.schedule-item.past {
-  opacity: 0.35;
-}
-
-.schedule-item.current {
-  opacity: 1;
-}
+.schedule-item:last-child { border-bottom: none; }
+.schedule-item.past { opacity: 0.3; }
 
 .schedule-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: rgba(255,255,255,0.2);
-  margin-top: 6px;
-  margin-right: 12px;
+  margin-top: 5px;
+  margin-right: 10px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
 
 .schedule-item.current .schedule-dot {
   background: #5dcc88;
-  -webkit-box-shadow: 0 0 8px rgba(93,204,136,0.6);
-  box-shadow: 0 0 8px rgba(93,204,136,0.6);
+  -webkit-box-shadow: 0 0 6px rgba(93,204,136,0.6);
+  box-shadow: 0 0 6px rgba(93,204,136,0.6);
 }
 
 .schedule-time {
   font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 11px;
   color: rgba(255,255,255,0.35);
-  width: 90px;
+  width: 80px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
   padding-top: 1px;
 }
 
-.schedule-item.current .schedule-time {
-  color: #5dcc88;
-}
+.schedule-item.current .schedule-time { color: #5dcc88; }
 
 .schedule-title {
-  font-size: 15px;
-  color: rgba(255,255,255,0.75);
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
   line-height: 1.3;
 }
 
-.schedule-item.current .schedule-title {
-  color: #ffffff;
-  font-weight: 400;
-}
+.schedule-item.current .schedule-title { color: #ffffff; font-weight: 400; }
+.schedule-empty { font-size: 13px; color: rgba(255,255,255,0.2); padding: 6px 0; }
 
-.schedule-empty {
-  font-size: 15px;
-  color: rgba(255,255,255,0.25);
-  padding: 10px 0;
-  text-align: center;
-}
-
-/* tomorrow */
 .schedule-tomorrow {
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-.schedule-tomorrow .schedule-title {
-  font-size: 14px;
-  color: rgba(255,255,255,0.5);
-}
-
-.schedule-tomorrow .schedule-time {
-  font-size: 12px;
 }
 
 /* ─── QUOTE ─── */
 .quote-text {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 300;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   line-height: 1.6;
   font-style: italic;
 }
 
 .quote-author {
-  font-size: 13px;
-  color: rgba(255,255,255,0.25);
-  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.22);
+  margin-top: 6px;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-/* ─── STATUS DOT ─── */
+.quote-header {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.shuffle-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.4);
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+/* ─── STATUS ─── */
 .status-row {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  justify-content: center;
   -webkit-box-align: center;
   -webkit-align-items: center;
   align-items: center;
   gap: 6px;
-  padding-top: 8px;
-  font-size: 11px;
+  font-size: 10px;
   color: rgba(255,255,255,0.15);
   letter-spacing: 1px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .status-dot {
@@ -490,86 +479,92 @@ body:before {
   border-radius: 50%;
   background: rgba(93,204,136,0.5);
 }
+
+.version {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 10px;
+}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="page">
 
-  <!-- TIME & DATE -->
-  <div class="clock-block">
+  <!-- TOP BAR: clock + date -->
+  <div class="top-bar">
     <div class="clock-time" id="clock-time">00<span class="colon">:</span>00</div>
-    <div class="clock-date" id="clock-date">загрузка...</div>
+    <div>
+      <div class="clock-date" id="clock-date">загрузка...</div>
+      <div class="status-row" style="margin-top:4px;-webkit-box-pack:end;-webkit-justify-content:flex-end;justify-content:flex-end;">
+        <div class="status-dot"></div>
+        <span id="status-time">—</span>
+        <span class="version">v7</span>
+      </div>
+    </div>
   </div>
 
-  <!-- WEATHER -->
-  <div class="card">
-    <div class="card-header">Погода · Прага</div>
-    <div id="weather-content">
-      <div class="weather-main">
-        <div>
-          <div class="weather-temp">—<sup>°C</sup></div>
-          <div class="weather-desc">загрузка...</div>
+  <!-- TWO COLUMNS -->
+  <div class="columns">
+
+    <!-- LEFT: weather + quote -->
+    <div class="col-left">
+
+      <div class="card">
+        <div class="card-header">Погода · Прага</div>
+        <div id="weather-content">
+          <div class="weather-main">
+            <div>
+              <div class="weather-temp">—<sup>°C</sup></div>
+              <div class="weather-desc">загрузка...</div>
+            </div>
+            <div class="weather-icon">🌤</div>
+          </div>
         </div>
-        <div class="weather-icon">🌤</div>
       </div>
-      <div class="weather-details">
-        <div class="weather-detail">Влажность <span id="w-humidity">—</span>%</div>
-        <div class="weather-detail">Ветер <span id="w-wind">—</span> км/ч</div>
-        <div class="weather-detail">Ощущается <span id="w-feels">—</span>°</div>
+
+      <div class="card card-grow">
+        <div class="quote-header">
+          <div class="card-header" style="margin-bottom:0">Цитата дня</div>
+          <button class="shuffle-btn" onclick="nextQuote()">↻</button>
+        </div>
+        <div class="quote-text" id="quote-text">...</div>
+        <div class="quote-author" id="quote-author"></div>
       </div>
-    </div>
-  </div>
 
-  <!-- BUSES -->
-  <div class="card">
-    <div class="card-header">Автобусы · Škola Nebušice → Bořislavka</div>
-    <div class="bus-row">
-      <div class="bus-badge b161">161</div>
-      <div class="bus-next" id="next-161">—</div>
-      <div class="bus-times" id="times-161">
-        <span class="bus-time">—</span>
-        <span class="bus-time">—</span>
-        <span class="bus-time">—</span>
+    </div>
+
+    <!-- RIGHT: buses + schedule -->
+    <div class="col-right">
+
+      <div class="card">
+        <div class="card-header">Автобусы · Škola Nebušice → Bořislavka</div>
+        <div class="bus-row">
+          <div class="bus-badge b161">161</div>
+          <div class="bus-next" id="next-161">—</div>
+          <div class="bus-times" id="times-161"></div>
+        </div>
+        <div class="bus-row">
+          <div class="bus-badge b312">312</div>
+          <div class="bus-next" id="next-312">—</div>
+          <div class="bus-times" id="times-312"></div>
+        </div>
+        <div class="bus-updated" id="bus-updated">—</div>
       </div>
-    </div>
-    <div class="bus-row">
-      <div class="bus-badge b312">312</div>
-      <div class="bus-next" id="next-312">—</div>
-      <div class="bus-times" id="times-312">
-        <span class="bus-time">—</span>
-        <span class="bus-time">—</span>
-        <span class="bus-time">—</span>
+
+      <div class="card card-grow">
+        <div class="card-header">Расписание · Алиса</div>
+        <div id="schedule-today"></div>
+        <div id="schedule-tomorrow"></div>
       </div>
+
     </div>
-    <div class="bus-updated" id="bus-updated">обновление...</div>
-  </div>
 
-  <!-- ALISA SCHEDULE -->
-  <div class="card">
-    <div class="card-header">Расписание · Алиса</div>
-    <div class="schedule-today" id="schedule-today"></div>
-    <div class="schedule-tomorrow" id="schedule-tomorrow"></div>
   </div>
-
-  <!-- QUOTE -->
-  <div class="card">
-    <div class="card-header" style="display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;">
-      <span>Цитата дня</span>
-      <button id="quote-shuffle" onclick="nextQuote()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);font-size:18px;width:32px;height:32px;border-radius:8px;cursor:pointer;line-height:1;padding:0;">↻</button>
-    </div>
-    <div class="quote-text" id="quote-text">...</div>
-    <div class="quote-author" id="quote-author"></div>
-  </div>
-
-  <div class="status-row">
-    <div class="status-dot"></div>
-    <span id="status-time">обновлено только что</span>
-    <span style="margin-left:12px;color:#ffffff;font-size:16px;font-weight:600">v6 06:56</span>
-  </div>
-
 </div>
 
 <script>
+
 // ─── UTILS ───────────────────────────────────────────────
 var DAYS_RU = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
 var MONTHS_RU = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
@@ -597,13 +592,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '11',
-  feels: '8',
-  humidity: '74',
-  wind: '9',
-  code: 2,
-  updatedAt: '05.04 09:13',
-  forecast: [{"label": "Сейчас", "temp": 11, "code": 2}, {"label": "10:00", "temp": 13, "code": 2}, {"label": "11:00", "temp": 16, "code": 0}, {"label": "12:00", "temp": 19, "code": 0}, {"label": "13:00", "temp": 20, "code": 0}, {"label": "14:00", "temp": 21, "code": 0}]
+  temp: '__TEMP__',
+  feels: '__FEELS__',
+  humidity: '__HUMIDITY__',
+  wind: '__WIND__',
+  code: __CODE__,
+  updatedAt: '__UPDATED_AT__',
+  forecast: __FORECAST__
 };
 // ── END WEATHER DATA ──
 
@@ -947,6 +942,7 @@ function updateStatus() {
 
 setInterval(updateStatus, 5 * 60 * 1000);
 updateStatus();
+
 </script>
 </body>
 </html>

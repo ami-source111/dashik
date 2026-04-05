@@ -6,8 +6,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Dashboard">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Home Dashboard</title>
-<!-- BUILD: v4 worker 2026-04-05 -->
+<!-- BUILD: v6 2026-04-05 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
@@ -561,7 +564,7 @@ body:before {
   <div class="status-row">
     <div class="status-dot"></div>
     <span id="status-time">обновлено только что</span>
-    <span style="margin-left:12px;opacity:0.4">v4</span>
+    <span style="margin-left:12px;color:#ffffff;font-size:16px;font-weight:600">v6 06:56</span>
   </div>
 
 </div>
@@ -590,43 +593,50 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ─── WEATHER ─────────────────────────────────────────────
-// WMO weather codes (open-meteo)
-var WMO_ICONS = {
-  0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️',
-  45:'🌫', 48:'🌫',
-  51:'🌦', 53:'🌦', 55:'🌧',
-  61:'🌧', 63:'🌧', 65:'🌧',
-  71:'❄️', 73:'❄️', 75:'❄️',
-  77:'🌨',
-  80:'🌦', 81:'🌧', 82:'⛈',
-  85:'🌨', 86:'🌨',
-  95:'⛈', 96:'⛈', 99:'⛈'
-}
-var WMO_DESC = {
-  113:'Ясно', 116:'Переменная облачность', 119:'Облачно', 122:'Пасмурно',
-  143:'Туман', 248:'Туман', 260:'Туман',
-  176:'Местами дождь', 179:'Местами снег', 182:'Морось', 185:'Морось',
-  200:'Гроза', 227:'Метель', 230:'Метель',
-  263:'Лёгкая морось', 266:'Морось', 281:'Ледяная морось', 284:'Ледяная морось',
-  293:'Небольшой дождь', 296:'Дождь', 299:'Умеренный дождь', 302:'Дождь',
-  305:'Сильный дождь', 308:'Ливень', 311:'Ледяной дождь', 314:'Ледяной дождь',
-  317:'Дождь со снегом', 320:'Дождь со снегом',
-  323:'Небольшой снег', 326:'Снег', 329:'Умеренный снег', 332:'Снег',
-  335:'Сильный снег', 338:'Снег', 350:'Ледяной дождь',
-  353:'Ливень', 356:'Ливень', 359:'Ливень',
-  362:'Дождь со снегом', 365:'Дождь со снегом', 368:'Снегопад', 371:'Снегопад',
-  374:'Ледяной дождь', 377:'Ледяной дождь',
-  386:'Гроза', 389:'Гроза с градом', 392:'Гроза со снегом', 395:'Снег с грозой'
-};
 
-function renderWeather(temp, code, wind, humidity, feels, hourlySlots) {
-  var icon = WMO_ICONS[code] || '🌡';
-  var desc = WMO_DESC[code] || '—';
+
+// ── WEATHER DATA (injected by GitHub Actions) ──
+var WEATHER_DATA = {
+  temp: '__TEMP__',
+  feels: '__FEELS__',
+  humidity: '__HUMIDITY__',
+  wind: '__WIND__',
+  code: __CODE__,
+  updatedAt: '__UPDATED_AT__',
+  forecast: __FORECAST__
+};
+// ── END WEATHER DATA ──
+
+function renderWeather() {
+  var d = WEATHER_DATA;
+  var WMO_ICONS_LOCAL = {
+    0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+    45:'🌫',48:'🌫',
+    51:'🌦',53:'🌦',55:'🌧',
+    61:'🌧',63:'🌧',65:'🌧',
+    71:'❄️',73:'❄️',75:'❄️',77:'🌨',
+    80:'🌦',81:'🌧',82:'⛈',
+    85:'🌨',86:'🌨',
+    95:'⛈',96:'⛈',99:'⛈'
+  };
+  var WMO_DESC_LOCAL = {
+    0:'Ясно',1:'Преимущественно ясно',2:'Переменная облачность',3:'Облачно',
+    45:'Туман',48:'Иней',
+    51:'Лёгкая морось',53:'Морось',55:'Сильная морось',
+    61:'Небольшой дождь',63:'Дождь',65:'Сильный дождь',
+    71:'Небольшой снег',73:'Снег',75:'Сильный снег',77:'Снежная крупа',
+    80:'Ливень',81:'Ливень',82:'Сильный ливень',
+    85:'Снежный ливень',86:'Снежный ливень',
+    95:'Гроза',96:'Гроза с градом',99:'Сильная гроза'
+  };
+
+  var icon = WMO_ICONS_LOCAL[d.code] || '🌡';
+  var desc = WMO_DESC_LOCAL[d.code] || '—';
 
   var forecastHtml = '';
-  for (var i = 0; i < hourlySlots.length; i++) {
-    var s = hourlySlots[i];
-    var hIcon = WMO_ICONS[s.code] || '🌡';
+  for (var i = 0; i < d.forecast.length; i++) {
+    var s = d.forecast[i];
+    var hIcon = WMO_ICONS_LOCAL[s.code] || '🌡';
     forecastHtml +=
       '<div class="fc-slot">' +
         '<div class="fc-label">' + s.label + '</div>' +
@@ -638,86 +648,22 @@ function renderWeather(temp, code, wind, humidity, feels, hourlySlots) {
   document.getElementById('weather-content').innerHTML =
     '<div class="weather-main">' +
       '<div>' +
-        '<div class="weather-temp">' + temp + '<sup>°C</sup></div>' +
+        '<div class="weather-temp">' + d.temp + '<sup>°C</sup></div>' +
         '<div class="weather-desc">' + desc + '</div>' +
       '</div>' +
       '<div class="weather-icon">' + icon + '</div>' +
     '</div>' +
     '<div class="weather-details">' +
-      '<div class="weather-detail">Влажность <span>' + humidity + '</span>%</div>' +
-      '<div class="weather-detail">Ветер <span>' + wind + '</span> км/ч</div>' +
-      '<div class="weather-detail">Ощущается <span>' + feels + '</span>°</div>' +
+      '<div class="weather-detail">Влажность <span>' + d.humidity + '</span>%</div>' +
+      '<div class="weather-detail">Ветер <span>' + d.wind + '</span> км/ч</div>' +
+      '<div class="weather-detail">Ощущается <span>' + d.feels + '</span>°</div>' +
     '</div>' +
-    '<div class="forecast-strip">' + forecastHtml + '</div>';
+    '<div class="forecast-strip">' + forecastHtml + '</div>' +
+    '<div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:8px;text-align:right">обновлено ' + d.updatedAt + '</div>';
 }
 
-function loadWeather() {
-  var xhr = new XMLHttpRequest();
-  var url = 'https://summer-rain-80bb.amirovnebusice.workers.dev/';
+renderWeather();
 
-  xhr.open('GET', url, true);
-  xhr.timeout = 10000;
-
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status === 0) {
-      document.getElementById('weather-content').innerHTML =
-        '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Нет соединения</div>';
-      return;
-    }
-    if (xhr.status !== 200) {
-      document.getElementById('weather-content').innerHTML =
-        '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Ошибка ' + xhr.status + '</div>';
-      return;
-    }
-    try {
-      var d = JSON.parse(xhr.responseText);
-      var cw = d.current_weather;
-      var code = cw.weathercode;
-      var temp = Math.round(cw.temperature);
-      var wind = Math.round(cw.windspeed);
-      var nowH = new Date().getHours();
-      var humidity = d.hourly && d.hourly.relativehumidity_2m ? (d.hourly.relativehumidity_2m[nowH] || '—') : '—';
-      var feelsRaw = d.hourly && d.hourly.apparent_temperature ? d.hourly.apparent_temperature[nowH] : null;
-      var feels = feelsRaw !== null && feelsRaw !== undefined ? Math.round(feelsRaw) : '—';
-
-      // hourly forecast: next 6 hours from now
-      var slots = [];
-      var times = d.hourly && d.hourly.time ? d.hourly.time : [];
-      var temps = d.hourly && d.hourly.temperature_2m ? d.hourly.temperature_2m : [];
-      var codes = d.hourly && d.hourly.weathercode ? d.hourly.weathercode : [];
-      for (var i = 0; i < times.length && slots.length < 6; i++) {
-        var h = parseInt(times[i].split('T')[1].split(':')[0]);
-        if (h < nowH) continue;
-        slots.push({
-          label: slots.length === 0 ? 'Сейчас' : (h < 10 ? '0' + h : '' + h) + ':00',
-          temp: Math.round(temps[i]),
-          code: codes[i]
-        });
-      }
-
-      renderWeather(temp, code, wind, humidity, feels, slots);
-    } catch(e) {
-      document.getElementById('weather-content').innerHTML =
-        '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Ошибка разбора</div>';
-    }
-  };
-
-  xhr.ontimeout = function() {
-    document.getElementById('weather-content').innerHTML =
-      '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Таймаут</div>';
-  };
-
-  xhr.onerror = function() {
-    document.getElementById('weather-content').innerHTML =
-      '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Нет соединения</div>';
-  };
-
-  xhr.send();
-}
-
-loadWeather();
-setInterval(loadWeather, 10 * 60 * 1000);
 // ─── BUS SCHEDULE ─────────────────────────────────────────
 // Static schedule: route 161 and 312 from Škola Nebušice toward Bořislavka
 // Weekday schedule (approximate, update as needed)

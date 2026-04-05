@@ -10,7 +10,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Home Dashboard</title>
-<!-- BUILD: v7 landscape 2026-04-05 -->
+<!-- BUILD: v8 2026-04-05 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
@@ -102,8 +102,8 @@ body:before {
 }
 
 .clock-date {
-  font-size: 15px;
-  color: rgba(255,255,255,0.4);
+  font-size: 19px;
+  color: rgba(255,255,255,0.75);
   letter-spacing: 3px;
   text-transform: uppercase;
   text-align: right;
@@ -118,7 +118,7 @@ body:before {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  gap: 12px;
+  gap: 20px;
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   flex: 1;
@@ -126,9 +126,9 @@ body:before {
 }
 
 .col-left {
-  width: 420px;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -194,7 +194,7 @@ body:before {
 
 .weather-temp {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 52px;
+  font-size: 64px;
   font-weight: 300;
   color: #ffffff;
   line-height: 1;
@@ -208,7 +208,7 @@ body:before {
   color: rgba(255,255,255,0.6);
 }
 
-.weather-icon { font-size: 44px; line-height: 1; }
+.weather-icon { font-size: 58px; line-height: 1; }
 
 .weather-desc {
   font-size: 14px;
@@ -309,15 +309,15 @@ body:before {
 .bus-badge.b312 { background: #1a5a3a; color: #5dcc88; border: 1px solid #2a8a5a; }
 
 .bus-next {
-  font-size: 14px;
-  color: rgba(255,255,255,0.35);
+  font-size: 19px;
+  color: rgba(255,255,255,0.5);
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   flex: 1;
 }
 
-.bus-next.soon { color: #ff9444; }
-.bus-next.very-soon { color: #ff4444; font-weight: 600; }
+.bus-next.soon { color: #ff9444; font-size: 19px; }
+.bus-next.very-soon { color: #ff4444; font-weight: 600; font-size: 19px; }
 
 .bus-times {
   display: -webkit-box;
@@ -389,8 +389,8 @@ body:before {
 
 .schedule-time {
   font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 11px;
-  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
   width: 80px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
@@ -400,8 +400,8 @@ body:before {
 .schedule-item.current .schedule-time { color: #5dcc88; }
 
 .schedule-title {
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  color: rgba(255,255,255,0.88);
   line-height: 1.3;
 }
 
@@ -416,9 +416,9 @@ body:before {
 
 /* ─── QUOTE ─── */
 .quote-text {
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 300;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.82);
   line-height: 1.6;
   font-style: italic;
 }
@@ -447,11 +447,11 @@ body:before {
 .shuffle-btn {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.4);
-  font-size: 16px;
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+  color: rgba(255,255,255,0.6);
+  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   cursor: pointer;
   line-height: 1;
   padding: 0;
@@ -499,7 +499,7 @@ body:before {
       <div class="status-row" style="margin-top:4px;-webkit-box-pack:end;-webkit-justify-content:flex-end;justify-content:flex-end;">
         <div class="status-dot"></div>
         <span id="status-time">—</span>
-        <span class="version">v7</span>
+        <span class="version">v8</span>
       </div>
     </div>
   </div>
@@ -592,13 +592,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '11',
-  feels: '8',
-  humidity: '74',
-  wind: '9',
-  code: 2,
-  updatedAt: '05.04 09:22',
-  forecast: [{"label": "Сейчас", "temp": 11, "code": 2}, {"label": "10:00", "temp": 13, "code": 2}, {"label": "11:00", "temp": 16, "code": 0}, {"label": "12:00", "temp": 19, "code": 0}, {"label": "13:00", "temp": 20, "code": 0}, {"label": "14:00", "temp": 21, "code": 0}]
+  temp: '__TEMP__',
+  feels: '__FEELS__',
+  humidity: '__HUMIDITY__',
+  wind: '__WIND__',
+  code: __CODE__,
+  updatedAt: '__UPDATED_AT__',
+  forecast: __FORECAST__
 };
 // ── END WEATHER DATA ──
 

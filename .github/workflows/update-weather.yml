@@ -9,14 +9,14 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Fetch weather and update dashboard
         run: |
           python3 - << 'PYEOF'
           import urllib.request, json, datetime, re
 
-          # Fetch from open-meteo (no TLS issues on GitHub's servers)
+          # Fetch from open-meteo
           url = (
             'https://api.open-meteo.com/v1/forecast'
             '?latitude=50.0755&longitude=14.4378'
@@ -66,18 +66,18 @@ jobs:
             html = f.read()
 
           # Replace markers
-          html = re.sub(r"temp: '__TEMP__'",       f"temp: '{temp}'",       html)
-          html = re.sub(r"feels: '__FEELS__'",     f"feels: '{feels}'",     html)
-          html = re.sub(r"humidity: '__HUMIDITY__'",f"humidity: '{humidity}'",html)
-          html = re.sub(r"wind: '__WIND__'",       f"wind: '{wind}'",       html)
-          html = re.sub(r"code: __CODE__",         f"code: {code}",         html)
-          html = re.sub(r"updatedAt: '__UPDATED_AT__'", f"updatedAt: '{updated_at}'", html)
-          html = re.sub(r"forecast: __FORECAST__", f"forecast: {forecast_json}", html)
+          html = re.sub(r"temp: '[^']*'",       f"temp: '{temp}'",         html)
+          html = re.sub(r"feels: '[^']*'",       f"feels: '{feels}'",       html)
+          html = re.sub(r"humidity: '[^']*'",    f"humidity: '{humidity}'", html)
+          html = re.sub(r"wind: '[^']*'",        f"wind: '{wind}'",         html)
+          html = re.sub(r"code: \d+",            f"code: {code}",           html)
+          html = re.sub(r"updatedAt: '[^']*'",   f"updatedAt: '{updated_at}'", html)
+          html = re.sub(r"forecast: \[.*?\]",    f"forecast: {forecast_json}", html, flags=re.DOTALL)
 
           with open('index.html', 'w', encoding='utf-8') as f:
             f.write(html)
 
-          print(f"Done: {temp}°C, code={code}, forecast={len(forecast)} slots")
+          print(f"Done: {temp}°C, code={code}, updated_at={updated_at}")
           PYEOF
 
       - name: Commit updated dashboard
@@ -86,4 +86,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet || git commit -m "weather: auto-update $(date -u +'%H:%M UTC')"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main

@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=768, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Dashboard">
 <title>Home Dashboard</title>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
@@ -163,6 +166,53 @@ body:before {
   margin-top: 4px;
 }
 
+/* ─── HOURLY FORECAST STRIP ─── */
+.forecast-strip {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+
+.fc-slot {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
+}
+
+.fc-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.fc-slot:first-child .fc-label {
+  color: rgba(255,255,255,0.55);
+  font-weight: 600;
+}
+
+.fc-icon {
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.fc-temp {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 3px;
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+}
+
+.fc-slot:first-child .fc-temp {
+  color: #ffffff;
+  font-weight: 400;
+}
+
 /* ─── BUSES ─── */
 .bus-row {
   display: -webkit-box;
@@ -218,6 +268,24 @@ body:before {
   flex: 1;
 }
 
+.bus-next {
+  font-size: 16px;
+  color: rgba(255,255,255,0.35);
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  padding-left: 2px;
+}
+
+.bus-next.soon {
+  color: #ff9444;
+}
+
+.bus-next.very-soon {
+  color: #ff4444;
+  font-weight: 600;
+}
+
 .bus-times {
   display: -webkit-box;
   display: -webkit-flex;
@@ -227,12 +295,28 @@ body:before {
 
 .bus-time {
   font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 16px;
-  font-weight: 400;
   color: #ffffff;
   background: rgba(255,255,255,0.08);
-  padding: 4px 10px;
-  border-radius: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-align: center;
+  min-width: 88px;
+}
+
+.bus-hhmm {
+  display: block;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.bus-min {
+  display: block;
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  letter-spacing: 0.3px;
+  margin-top: 1px;
 }
 
 .bus-time.soon {
@@ -240,9 +324,17 @@ body:before {
   background: rgba(255,148,68,0.12);
 }
 
+.bus-time.soon .bus-min {
+  color: rgba(255,148,68,0.6);
+}
+
 .bus-time.very-soon {
   color: #ff4444;
   background: rgba(255,68,68,0.12);
+}
+
+.bus-time.very-soon .bus-min {
+  color: rgba(255,68,68,0.7);
 }
 
 .bus-updated {
@@ -429,7 +521,7 @@ body:before {
     <div class="card-header">Автобусы · Škola Nebušice → Bořislavka</div>
     <div class="bus-row">
       <div class="bus-badge b161">161</div>
-      <div class="bus-dest">Bořislavka</div>
+      <div class="bus-next" id="next-161">—</div>
       <div class="bus-times" id="times-161">
         <span class="bus-time">—</span>
         <span class="bus-time">—</span>
@@ -438,7 +530,7 @@ body:before {
     </div>
     <div class="bus-row">
       <div class="bus-badge b312">312</div>
-      <div class="bus-dest">Bořislavka</div>
+      <div class="bus-next" id="next-312">—</div>
       <div class="bus-times" id="times-312">
         <span class="bus-time">—</span>
         <span class="bus-time">—</span>
@@ -457,7 +549,10 @@ body:before {
 
   <!-- QUOTE -->
   <div class="card">
-    <div class="card-header">Цитата дня</div>
+    <div class="card-header" style="display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;">
+      <span>Цитата дня</span>
+      <button id="quote-shuffle" onclick="nextQuote()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);font-size:18px;width:32px;height:32px;border-radius:8px;cursor:pointer;line-height:1;padding:0;">↻</button>
+    </div>
     <div class="quote-text" id="quote-text">...</div>
     <div class="quote-author" id="quote-author"></div>
   </div>
@@ -517,9 +612,30 @@ var WMO_DESC = {
   95:'Гроза', 96:'Гроза с градом', 99:'Сильная гроза'
 };
 
-function renderWeather(temp, code, wind, humidity, feels) {
+function renderWeather(temp, code, wind, humidity, feels, hourlyTemps, hourlyCodes, hourlyTimes) {
   var icon = WMO_ICONS[code] || '🌡';
   var desc = WMO_DESC[code] || '—';
+
+  // build hourly forecast strip: next 8 hours
+  var now = new Date();
+  var nowH = now.getHours();
+  var forecastHtml = '';
+  var count = 0;
+  for (var i = 0; i < hourlyTimes.length && count < 8; i++) {
+    var h = parseInt(hourlyTimes[i].split('T')[1].split(':')[0]);
+    if (h < nowH) continue;
+    var hIcon = WMO_ICONS[hourlyCodes[i]] || '🌡';
+    var hTemp = Math.round(hourlyTemps[i]);
+    var label = h === nowH ? 'Сейчас' : (h < 10 ? '0' + h : h) + ':00';
+    forecastHtml +=
+      '<div class="fc-slot">' +
+        '<div class="fc-label">' + label + '</div>' +
+        '<div class="fc-icon">' + hIcon + '</div>' +
+        '<div class="fc-temp">' + hTemp + '°</div>' +
+      '</div>';
+    count++;
+  }
+
   document.getElementById('weather-content').innerHTML =
     '<div class="weather-main">' +
       '<div>' +
@@ -532,7 +648,8 @@ function renderWeather(temp, code, wind, humidity, feels) {
       '<div class="weather-detail">Влажность <span>' + humidity + '</span>%</div>' +
       '<div class="weather-detail">Ветер <span>' + wind + '</span> км/ч</div>' +
       '<div class="weather-detail">Ощущается <span>' + feels + '</span>°</div>' +
-    '</div>';
+    '</div>' +
+    '<div class="forecast-strip">' + forecastHtml + '</div>';
 }
 
 function loadWeather() {
@@ -540,7 +657,7 @@ function loadWeather() {
   var url = 'https://api.open-meteo.com/v1/forecast' +
     '?latitude=50.0755&longitude=14.4378' +
     '&current_weather=true' +
-    '&hourly=relativehumidity_2m,apparent_temperature,windspeed_10m' +
+    '&hourly=relativehumidity_2m,apparent_temperature,windspeed_10m,temperature_2m,weathercode' +
     '&timezone=Europe%2FPrague' +
     '&forecast_days=1';
 
@@ -571,7 +688,10 @@ function loadWeather() {
       var humidity = d.hourly && d.hourly.relativehumidity_2m ? (d.hourly.relativehumidity_2m[hIdx] || '—') : '—';
       var feelsRaw = d.hourly && d.hourly.apparent_temperature ? d.hourly.apparent_temperature[hIdx] : null;
       var feels = feelsRaw !== null && feelsRaw !== undefined ? Math.round(feelsRaw) : '—';
-      renderWeather(temp, code, wind, humidity, feels);
+      var hourlyTemps = d.hourly && d.hourly.temperature_2m ? d.hourly.temperature_2m : [];
+      var hourlyCodes = d.hourly && d.hourly.weathercode ? d.hourly.weathercode : [];
+      var hourlyTimes = d.hourly && d.hourly.time ? d.hourly.time : [];
+      renderWeather(temp, code, wind, humidity, feels, hourlyTemps, hourlyCodes, hourlyTimes);
     } catch(e) {
       document.getElementById('weather-content').innerHTML =
         '<div class="weather-desc" style="color:rgba(255,255,255,0.3);padding:10px 0">Ошибка разбора данных</div>';
@@ -632,17 +752,33 @@ function getNextBusTimes(route, count) {
 function renderBusTimes(routeNum, elementId) {
   var times = getNextBusTimes(routeNum, 3);
   var el = document.getElementById(elementId);
+  var nextEl = document.getElementById('next-' + routeNum);
   if (!el) return;
   var html = '';
+
+  if (nextEl) {
+    if (times.length === 0) {
+      nextEl.className = 'bus-next';
+      nextEl.textContent = 'нет рейсов';
+    } else {
+      var first = times[0];
+      var ncls = 'bus-next';
+      if (first.diff <= 5) ncls += ' very-soon';
+      else if (first.diff <= 15) ncls += ' soon';
+      nextEl.className = ncls;
+      nextEl.textContent = first.diff === 0 ? 'сейчас' : 'через ' + first.diff + ' мин';
+    }
+  }
+
   if (times.length === 0) {
-    html = '<span class="bus-time" style="color:rgba(255,255,255,0.2)">нет рейсов</span>';
+    html = '<span class="bus-time" style="color:rgba(255,255,255,0.2)">—</span>';
   } else {
     for (var i = 0; i < times.length; i++) {
       var t = times[i];
-      var cls = 'bus-time';
-      if (t.diff <= 5) cls += ' very-soon';
-      else if (t.diff <= 15) cls += ' soon';
-      html += '<span class="' + cls + '">' + formatTime(t.h, t.m) + '</span>';
+      var tcls = 'bus-time';
+      if (t.diff <= 5) tcls += ' very-soon';
+      else if (t.diff <= 15) tcls += ' soon';
+      html += '<div class="' + tcls + '"><span class="bus-hhmm">' + formatTime(t.h, t.m) + '</span></div>';
     }
   }
   el.innerHTML = html;
@@ -834,12 +970,20 @@ var QUOTES = [
   { text: 'Вчера — история. Завтра — загадка. Сегодня — подарок.', author: 'Элинор Рузвельт' }
 ];
 
+var quoteOffset = 0;
+
 function showQuote() {
   var today = new Date();
-  var idx = (today.getFullYear() * 366 + today.getMonth() * 31 + today.getDate()) % QUOTES.length;
+  var base = today.getFullYear() * 366 + today.getMonth() * 31 + today.getDate();
+  var idx = (base + quoteOffset) % QUOTES.length;
   var q = QUOTES[idx];
   document.getElementById('quote-text').textContent = '\u00ab' + q.text + '\u00bb';
   document.getElementById('quote-author').textContent = '\u2014\u2009' + q.author;
+}
+
+function nextQuote() {
+  quoteOffset = (quoteOffset + 1) % QUOTES.length;
+  showQuote();
 }
 
 showQuote();

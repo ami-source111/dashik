@@ -10,7 +10,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Home Dashboard</title>
-<!-- BUILD: v8 2026-04-05 -->
+<!-- BUILD: v9 2026-04-05 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
@@ -106,11 +106,11 @@ body:before {
   color: rgba(255,255,255,0.75);
   letter-spacing: 3px;
   text-transform: uppercase;
-  text-align: right;
+  text-align: left;
 }
 
 .status-info {
-  text-align: right;
+  text-align: left;
 }
 
 /* columns */
@@ -136,7 +136,7 @@ body:before {
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 .col-right {
@@ -150,7 +150,7 @@ body:before {
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 /* ─── CARDS ─── */
@@ -208,7 +208,7 @@ body:before {
   color: rgba(255,255,255,0.6);
 }
 
-.weather-icon { font-size: 58px; line-height: 1; }
+.weather-icon { font-size: 72px; line-height: 1; display: block; }
 
 .weather-desc {
   font-size: 14px;
@@ -274,7 +274,7 @@ body:before {
   font-size: 10px;
   color: rgba(255,255,255,0.18);
   margin-top: 6px;
-  text-align: right;
+  text-align: left;
 }
 
 /* ─── BUSES ─── */
@@ -344,7 +344,7 @@ body:before {
   font-size: 10px;
   color: rgba(255,255,255,0.18);
   margin-top: 6px;
-  text-align: right;
+  text-align: left;
 }
 
 /* ─── SCHEDULE ─── */
@@ -493,15 +493,15 @@ body:before {
 
   <!-- TOP BAR: clock + date -->
   <div class="top-bar">
-    <div class="clock-time" id="clock-time">00<span class="colon">:</span>00</div>
     <div>
       <div class="clock-date" id="clock-date">загрузка...</div>
-      <div class="status-row" style="margin-top:4px;-webkit-box-pack:end;-webkit-justify-content:flex-end;justify-content:flex-end;">
+      <div class="status-row" style="margin-top:4px;">
         <div class="status-dot"></div>
         <span id="status-time">—</span>
-        <span class="version">v8</span>
+        <span class="version">v9</span>
       </div>
     </div>
+    <div class="clock-time" id="clock-time">00<span class="colon">:</span>00</div>
   </div>
 
   <!-- TWO COLUMNS -->
@@ -592,13 +592,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '12',
-  feels: '8',
-  humidity: '74',
-  wind: '10',
-  code: 1,
-  updatedAt: '05.04 09:33',
-  forecast: [{"label": "Сейчас", "temp": 11, "code": 1}, {"label": "10:00", "temp": 13, "code": 2}, {"label": "11:00", "temp": 16, "code": 0}, {"label": "12:00", "temp": 18, "code": 0}, {"label": "13:00", "temp": 21, "code": 0}, {"label": "14:00", "temp": 21, "code": 0}]
+  temp: '__TEMP__',
+  feels: '__FEELS__',
+  humidity: '__HUMIDITY__',
+  wind: '__WIND__',
+  code: __CODE__,
+  updatedAt: '__UPDATED_AT__',
+  forecast: __FORECAST__
 };
 // ── END WEATHER DATA ──
 

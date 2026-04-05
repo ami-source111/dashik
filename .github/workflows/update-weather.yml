@@ -16,7 +16,6 @@ jobs:
           python3 - << 'PYEOF'
           import urllib.request, json, datetime, re
 
-          # Fetch from open-meteo
           url = (
             'https://api.open-meteo.com/v1/forecast'
             '?latitude=50.0755&longitude=14.4378'
@@ -41,10 +40,9 @@ jobs:
           humids  = hourly['relativehumidity_2m']
           feels_l = hourly['apparent_temperature']
 
-          humidity = str(humids[now_h]) if now_h < len(humids) else '—'
-          feels    = str(round(feels_l[now_h])) if now_h < len(feels_l) else '—'
+          humidity = str(humids[now_h]) if now_h < len(humids) else '-'
+          feels    = str(round(feels_l[now_h])) if now_h < len(feels_l) else '-'
 
-          # Build 6-slot hourly forecast from now
           forecast = []
           for i, t in enumerate(times):
             h = int(t.split('T')[1].split(':')[0])
@@ -61,23 +59,22 @@ jobs:
 
           forecast_json = json.dumps(forecast, ensure_ascii=False)
 
-          # Read dashboard
           with open('index.html', 'r', encoding='utf-8') as f:
             html = f.read()
 
-          # Replace markers
-          html = re.sub(r"temp: '[^']*'",       f"temp: '{temp}'",         html)
-          html = re.sub(r"feels: '[^']*'",       f"feels: '{feels}'",       html)
-          html = re.sub(r"humidity: '[^']*'",    f"humidity: '{humidity}'", html)
-          html = re.sub(r"wind: '[^']*'",        f"wind: '{wind}'",         html)
-          html = re.sub(r"code: \d+",            f"code: {code}",           html)
-          html = re.sub(r"updatedAt: '[^']*'",   f"updatedAt: '{updated_at}'", html)
-          html = re.sub(r"forecast: \[.*?\]",    f"forecast: {forecast_json}", html, flags=re.DOTALL)
+          # Replace all markers — use simple string patterns that match exactly
+          html = re.sub(r"temp: '[^']*'",      "temp: '" + temp + "'",      html)
+          html = re.sub(r"feels: '[^']*'",      "feels: '" + feels + "'",    html)
+          html = re.sub(r"humidity: '[^']*'",   "humidity: '" + humidity + "'", html)
+          html = re.sub(r"wind: '[^']*'",       "wind: '" + wind + "'",      html)
+          html = re.sub(r"code: (__CODE__|\d+)","code: " + str(code),        html)
+          html = re.sub(r"updatedAt: '[^']*'",  "updatedAt: '" + updated_at + "'", html)
+          html = re.sub(r"forecast: (__FORECAST__|\[.*?\])", "forecast: " + forecast_json, html, flags=re.DOTALL)
 
           with open('index.html', 'w', encoding='utf-8') as f:
             f.write(html)
 
-          print(f"Done: {temp}°C, code={code}, updated_at={updated_at}")
+          print(f"Done: {temp}C code={code} feels={feels} updated={updated_at}")
           PYEOF
 
       - name: Commit updated dashboard

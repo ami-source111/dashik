@@ -1,9 +1,9 @@
-name: Update Weather
+name: Update Dashboard
 
 on:
   schedule:
     - cron: '0 * * * *'   # every hour
-  workflow_dispatch:        # manual trigger button in GitHub UI
+  workflow_dispatch:        # manual trigger
 
 jobs:
   update:
@@ -11,11 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch weather and update dashboard
+      - name: Fetch weather and schedule
         run: |
           python3 - << 'PYEOF'
           import urllib.request, json, datetime, re
 
+          TZ_OFFSET = 2  # Prague summer (CEST = UTC+2)
+
+          # ── WEATHER ──────────────────────────────────────────
           url = (
             'https://api.open-meteo.com/v1/forecast'
             '?latitude=50.0755&longitude=14.4378'
@@ -25,62 +28,141 @@ jobs:
             '&forecast_days=1'
           )
           with urllib.request.urlopen(url) as r:
-            d = json.loads(r.read())
+            wd = json.loads(r.read())
 
-          cw = d['current_weather']
-          temp    = str(round(cw['temperature']))
-          wind    = str(round(cw['windspeed']))
-          code    = int(cw['weathercode'])
-
-          now_h = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).hour
-          hourly  = d['hourly']
-          times   = hourly['time']
-          temps   = hourly['temperature_2m']
-          codes   = hourly['weathercode']
-          humids  = hourly['relativehumidity_2m']
-          feels_l = hourly['apparent_temperature']
-
-          humidity = str(humids[now_h]) if now_h < len(humids) else '-'
-          feels    = str(round(feels_l[now_h])) if now_h < len(feels_l) else '-'
+          cw   = wd['current_weather']
+          temp = str(round(cw['temperature']))
+          wind = str(round(cw['windspeed']))
+          code = int(cw['weathercode'])
+          now_h = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ_OFFSET))).hour
+          h     = wd['hourly']
+          humidity = str(h['relativehumidity_2m'][now_h])
+          feels    = str(round(h['apparent_temperature'][now_h]))
 
           forecast = []
-          for i, t in enumerate(times):
-            h = int(t.split('T')[1].split(':')[0])
-            if h < now_h:
-              continue
-            label = 'Сейчас' if len(forecast) == 0 else f"{h:02d}:00"
-            forecast.append({'label': label, 'temp': round(temps[i]), 'code': int(codes[i])})
-            if len(forecast) >= 6:
-              break
+          for i, t in enumerate(h['time']):
+            hh = int(t.split('T')[1].split(':')[0])
+            if hh < now_h: continue
+            label = 'Сейчас' if len(forecast) == 0 else f"{hh:02d}:00"
+            forecast.append({'label': label, 'temp': round(h['temperature_2m'][i]), 'code': int(h['weathercode'][i])})
+            if len(forecast) >= 6: break
 
           updated_at = datetime.datetime.now(
-            datetime.timezone(datetime.timedelta(hours=2))
+            datetime.timezone(datetime.timedelta(hours=TZ_OFFSET))
           ).strftime('%d.%m %H:%M')
 
-          forecast_json = json.dumps(forecast, ensure_ascii=False)
+          # ── SCHEDULE (Veracross ICS) ──────────────────────────
+          ics_url = 'https://api.veracross.eu/isp/subscribe/5F8B8AC7-FD73-4B86-8E64-8A5774618990.ics?uid=52F8A28F-D369-4EC8-B945-4CBF8135B1D6'
+          try:
+            req = urllib.request.Request(ics_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=20) as r:
+              ics = r.read().decode('utf-8', errors='ignore')
+            print(f"ICS fetched: {len(ics)} bytes")
+          except Exception as e:
+            print(f"ICS fetch failed: {e}")
+            ics = ''
 
+          events = []
+          SKIP_SUMMARIES = {'Homeroom 6.3', 'Advisory-MS 6.3', 'MS Lunch'}
+
+          if ics:
+            # Parse VEVENT blocks
+            for block in re.findall(r'BEGIN:VEVENT(.*?)END:VEVENT', ics, re.DOTALL):
+              def get(field):
+                m = re.search(r'^' + field + r':(.+)$', block, re.MULTILINE)
+                return m.group(1).strip() if m else ''
+
+              summary = get('SUMMARY')
+              if summary in SKIP_SUMMARIES:
+                continue
+
+              dtstart = get('DTSTART')
+              dtend   = get('DTEND')
+              desc    = get('DESCRIPTION')
+              location = get('LOCATION')
+
+              # Parse UTC datetime
+              try:
+                if dtstart.endswith('Z'):
+                  dt     = datetime.datetime.strptime(dtstart, '%Y%m%dT%H%M%SZ')
+                  dt_end = datetime.datetime.strptime(dtend,   '%Y%m%dT%H%M%SZ')
+                  dt     += datetime.timedelta(hours=TZ_OFFSET)
+                  dt_end += datetime.timedelta(hours=TZ_OFFSET)
+                else:
+                  dt     = datetime.datetime.strptime(dtstart[:15], '%Y%m%dT%H%M%S')
+                  dt_end = datetime.datetime.strptime(dtend[:15],   '%Y%m%dT%H%M%S')
+              except:
+                continue
+
+              # Only future events (from today)
+              today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ_OFFSET))).date()
+              if dt.date() < today:
+                continue
+
+              # Parse Day from DESCRIPTION: "Block: A\; Day: MS1-ABCDE\; Room: 135"
+              day_m  = re.search(r'Day: ([^\\;\\\\]+)', desc)
+              room_m = re.search(r'Room: ([^\\;\\\\]+)', desc)
+              school_day = day_m.group(1).strip() if day_m else ''
+              room       = room_m.group(1).strip() if room_m else location.strip()
+
+              # Shorten room name: "129 - Idea Lab" -> "Idea Lab (129)"
+              if ' - ' in room:
+                parts = room.split(' - ', 1)
+                room = parts[1] + ' (' + parts[0].strip() + ')'
+
+              # Short summary (drop version number "6.1" etc)
+              short = re.sub(r'\s+\d+\.\d+$', '', summary)
+              short = re.sub(r'^MS ', '', short)
+
+              events.append({
+                'date':  dt.strftime('%Y-%m-%d'),
+                'start': dt.strftime('%H:%M'),
+                'end':   dt_end.strftime('%H:%M'),
+                'title': short,
+                'day':   school_day,
+                'room':  room,
+              })
+
+            # Deduplicate
+            seen = set()
+            uniq = []
+            for ev in events:
+              key = (ev['date'], ev['start'], ev['title'])
+              if key not in seen:
+                seen.add(key)
+                uniq.append(ev)
+            events = sorted(uniq, key=lambda x: (x['date'], x['start']))
+            print(f"Events parsed: {len(events)}")
+
+          # ── WRITE TO HTML ─────────────────────────────────────
           with open('index.html', 'r', encoding='utf-8') as f:
             html = f.read()
 
-          # Replace all markers — use simple string patterns that match exactly
+          # Weather markers
           html = re.sub(r"temp: '[^']*'",      "temp: '" + temp + "'",      html)
           html = re.sub(r"feels: '[^']*'",      "feels: '" + feels + "'",    html)
           html = re.sub(r"humidity: '[^']*'",   "humidity: '" + humidity + "'", html)
           html = re.sub(r"wind: '[^']*'",       "wind: '" + wind + "'",      html)
           html = re.sub(r"code: (__CODE__|\d+)","code: " + str(code),        html)
           html = re.sub(r"updatedAt: '[^']*'",  "updatedAt: '" + updated_at + "'", html)
-          html = re.sub(r"forecast: (__FORECAST__|\[.*?\])", "forecast: " + forecast_json, html, flags=re.DOTALL)
+          html = re.sub(r"forecast: (__FORECAST__|\[.*?\])", "forecast: " + json.dumps(forecast, ensure_ascii=False), html, flags=re.DOTALL)
+
+          # Schedule — replace ALISA_EVENTS array
+          if events:
+            events_json = json.dumps(events, ensure_ascii=False)
+            html = re.sub(r'var ALISA_EVENTS = \[.*?\];', 'var ALISA_EVENTS = ' + events_json + ';', html, flags=re.DOTALL)
+            print("ALISA_EVENTS updated")
 
           with open('index.html', 'w', encoding='utf-8') as f:
             f.write(html)
 
-          print(f"Done: {temp}C code={code} feels={feels} updated={updated_at}")
+          print(f"Done: {temp}C code={code} events={len(events)}")
           PYEOF
 
-      - name: Commit updated dashboard
+      - name: Commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "weather: auto-update $(date -u +'%H:%M UTC')"
+          git diff --cached --quiet || git commit -m "dashboard: auto-update $(date -u +'%H:%M UTC')"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main

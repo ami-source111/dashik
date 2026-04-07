@@ -11,33 +11,43 @@ url = (
     '&timezone=Europe%2FPrague'
     '&forecast_days=1'
 )
-with urllib.request.urlopen(url) as r:
-    wd = json.loads(r.read())
-
-cw   = wd['current_weather']
-temp = str(round(cw['temperature']))
-wind = str(round(cw['windspeed']))
-code = int(cw['weathercode'])
-
-now_dt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ)))
-now_h  = now_dt.hour
-h      = wd['hourly']
-
-humidity = str(h['relativehumidity_2m'][now_h])
-feels    = str(round(h['apparent_temperature'][now_h]))
-
-forecast = []
-for i, t in enumerate(h['time']):
-    hh = int(t.split('T')[1].split(':')[0])
-    if hh < now_h:
-        continue
-    label = 'Сейчас' if len(forecast) == 0 else f"{hh:02d}:00"
-    forecast.append({'label': label, 'temp': round(h['temperature_2m'][i]), 'code': int(h['weathercode'][i])})
-    if len(forecast) >= 6:
-        break
-
+now_dt   = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ)))
+now_h    = now_dt.hour
 updated_at = now_dt.strftime('%d.%m %H:%M')
-print(f"Weather: {temp}C code={code}")
+
+temp = humidity = feels = wind = ''
+code = 0
+forecast = []
+weather_ok = False
+
+for attempt in range(3):
+    try:
+        with urllib.request.urlopen(url, timeout=15) as r:
+            wd = json.loads(r.read())
+        cw   = wd['current_weather']
+        temp = str(round(cw['temperature']))
+        wind = str(round(cw['windspeed']))
+        code = int(cw['weathercode'])
+        h    = wd['hourly']
+        humidity = str(h['relativehumidity_2m'][now_h])
+        feels    = str(round(h['apparent_temperature'][now_h]))
+        for i, t in enumerate(h['time']):
+            hh = int(t.split('T')[1].split(':')[0])
+            if hh < now_h:
+                continue
+            label = 'Сейчас' if len(forecast) == 0 else f"{hh:02d}:00"
+            forecast.append({'label': label, 'temp': round(h['temperature_2m'][i]), 'code': int(h['weathercode'][i])})
+            if len(forecast) >= 6:
+                break
+        weather_ok = True
+        print(f"Weather: {temp}C code={code}")
+        break
+    except Exception as e:
+        print(f"Weather attempt {attempt+1} failed: {e}")
+        import time; time.sleep(5)
+
+if not weather_ok:
+    print("Weather unavailable, keeping existing data")
 
 # ── ICS SCHEDULE ─────────────────────────────────────────────────────────────
 ICS_URL = 'https://api.veracross.eu/isp/subscribe/5F8B8AC7-FD73-4B86-8E64-8A5774618990.ics?uid=52F8A28F-D369-4EC8-B945-4CBF8135B1D6'
@@ -137,17 +147,18 @@ if ics:
 with open('index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
-html = re.sub(r"temp: '[^']*'",      "temp: '" + temp + "'",         html)
-html = re.sub(r"feels: '[^']*'",     "feels: '" + feels + "'",       html)
-html = re.sub(r"humidity: '[^']*'",  "humidity: '" + humidity + "'", html)
-html = re.sub(r"wind: '[^']*'",      "wind: '" + wind + "'",         html)
-html = re.sub(r"code: (__CODE__|\d+)", "code: " + str(code),         html)
-html = re.sub(r"updatedAt: '[^']*'", "updatedAt: '" + updated_at + "'", html)
-html = re.sub(
-    r"forecast: (__FORECAST__|\[.*?\])",
-    "forecast: " + json.dumps(forecast, ensure_ascii=False),
-    html, flags=re.DOTALL
-)
+if weather_ok:
+    html = re.sub(r"temp: '[^']*'",      "temp: '" + temp + "'",         html)
+    html = re.sub(r"feels: '[^']*'",     "feels: '" + feels + "'",       html)
+    html = re.sub(r"humidity: '[^']*'",  "humidity: '" + humidity + "'", html)
+    html = re.sub(r"wind: '[^']*'",      "wind: '" + wind + "'",         html)
+    html = re.sub(r"code: (__CODE__|\d+)", "code: " + str(code),         html)
+    html = re.sub(r"updatedAt: '[^']*'", "updatedAt: '" + updated_at + "'", html)
+    html = re.sub(
+        r"forecast: (__FORECAST__|\[.*?\])",
+        "forecast: " + json.dumps(forecast, ensure_ascii=False),
+        html, flags=re.DOTALL
+    )
 
 if events:
     events_json = json.dumps(events, ensure_ascii=False)

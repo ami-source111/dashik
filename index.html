@@ -10,550 +10,245 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Home Dashboard</title>
-<!-- BUILD: v9 2026-04-05 -->
+<!-- BUILD: v11 2026-04-08 -->
 <style>
 @import url('https://fonts.googleapis.com/css?family=Oswald:300,400,600|Source+Sans+Pro:300,400,600|Roboto+Mono:300,400');
 
-* {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { -webkit-box-sizing: border-box; box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  width: 1024px;
-  height: 768px;
-  overflow: hidden;
-  background: #0a0c0f;
-  color: #e8e8e8;
+  width: 1024px; height: 768px; overflow: hidden;
+  background: #0a0c0f; color: #e8e8e8;
   font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  -webkit-font-smoothing: antialiased;
+  font-weight: 300; -webkit-font-smoothing: antialiased;
 }
 
 body:before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background:
     radial-gradient(ellipse at 20% 0%, rgba(30,60,90,0.4) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 100%, rgba(20,50,40,0.3) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
 
 /* ─── LAYOUT ─── */
 .page {
-  position: relative;
-  z-index: 1;
-  width: 1024px;
-  height: 768px;
-  padding: 16px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  gap: 12px;
+  position: relative; z-index: 1;
+  width: 1024px; height: 768px;
+  padding: 14px;
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+  gap: 10px;
 }
 
-/* top: clock full width */
+/* Top bar: date left, time right */
 .top-bar {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
-  padding: 0 4px 12px;
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+  -webkit-box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between;
+  padding-bottom: 10px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-}
-
-.clock-time {
-  font-family: 'Oswald', Arial, sans-serif;
-  font-size: 72px;
-  font-weight: 300;
-  color: #ffffff;
-  line-height: 1;
-  letter-spacing: -2px;
-  text-shadow: 0 0 60px rgba(100,180,255,0.2);
-}
-
-.clock-time .colon {
-  -webkit-animation: blink 1s step-end infinite;
-  animation: blink 1s step-end infinite;
-}
-
-@-webkit-keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.15; }
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.15; }
+  -webkit-flex-shrink: 0; flex-shrink: 0;
 }
 
 .clock-date {
-  font-size: 19px;
-  color: rgba(255,255,255,0.75);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  text-align: left;
+  font-size: 20px; color: rgba(255,255,255,0.78);
+  letter-spacing: 3px; text-transform: uppercase;
 }
 
-.status-info {
-  text-align: left;
+.status-row {
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-box-align: center; -webkit-align-items: center; align-items: center;
+  gap: 6px; font-size: 10px; color: rgba(255,255,255,0.18);
+  letter-spacing: 1px; margin-top: 3px;
 }
 
-/* columns */
-.columns {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  gap: 20px;
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(93,204,136,0.5); }
+.version { color: #fff; font-size: 13px; font-weight: 600; margin-left: 4px; }
+
+.clock-time {
+  font-family: 'Oswald', Arial, sans-serif;
+  font-size: 68px; font-weight: 300; color: #fff;
+  line-height: 1; letter-spacing: -2px;
+  text-shadow: 0 0 60px rgba(100,180,255,0.2);
+}
+.clock-time .colon { -webkit-animation: blink 1s step-end infinite; animation: blink 1s step-end infinite; }
+@-webkit-keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+/* Body: left narrow + right wide */
+.body {
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  gap: 12px;
+  -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;
   min-height: 0;
 }
 
+/* LEFT column: buses + quote */
 .col-left {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  gap: 16px;
+  width: 300px; -webkit-flex-shrink: 0; flex-shrink: 0;
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+  gap: 10px;
 }
 
+/* RIGHT column: weather top + schedule bottom */
 .col-right {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  gap: 16px;
+  -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 0;
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-box-orient: vertical; -webkit-flex-direction: column; flex-direction: column;
+  gap: 10px;
 }
 
 /* ─── CARDS ─── */
 .card {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-radius: 10px; padding: 12px 14px;
 }
-
-.card-grow {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
+.card-grow { -webkit-box-flex:1; -webkit-flex:1; flex:1; min-height:0; overflow:hidden; }
 
 .card-header {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  margin-bottom: 10px;
+  font-size: 10px; font-weight: 400; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 8px;
 }
 
 /* ─── WEATHER ─── */
-.weather-main {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
+.weather-row {
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  gap: 16px; -webkit-box-align: center; -webkit-align-items: center; align-items: center;
 }
-
+.weather-left { -webkit-box-flex:1; -webkit-flex:1; flex:1; }
 .weather-temp {
   font-family: 'Oswald', Arial, sans-serif;
-  font-size: 64px;
-  font-weight: 300;
-  color: #ffffff;
-  line-height: 1;
+  font-size: 52px; font-weight: 300; color: #fff; line-height: 1;
 }
-
-.weather-temp sup {
-  font-size: 22px;
-  vertical-align: top;
-  margin-top: 6px;
-  display: inline-block;
-  color: rgba(255,255,255,0.6);
-}
-
-.weather-icon { line-height: 1; display: block; width: 90px; height: 80px; overflow: visible; }
-
-.weather-desc {
-  font-size: 14px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 2px;
-}
-
-.weather-details {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  gap: 14px;
-  margin-top: 8px;
-}
-
-.weather-detail {
-  font-size: 12px;
-  color: rgba(255,255,255,0.4);
-}
-
-.weather-detail span {
-  color: rgba(255,255,255,0.75);
-  font-weight: 400;
-}
+.weather-temp sup { font-size: 20px; vertical-align: top; margin-top: 5px; display: inline-block; color: rgba(255,255,255,0.6); }
+.weather-desc { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.weather-details { display:-webkit-box; display:-webkit-flex; display:flex; gap:12px; margin-top:5px; }
+.weather-detail { font-size: 11px; color: rgba(255,255,255,0.38); }
+.weather-detail span { color: rgba(255,255,255,0.75); font-weight: 400; }
+.weather-icon { line-height:1; overflow:visible; }
 
 .forecast-strip {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  margin-top: 10px;
-  padding-top: 10px;
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  margin-top: 8px; padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,0.07);
 }
-
-.fc-slot {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-  text-align: center;
-}
-
-.fc-label {
-  font-size: 10px;
-  color: rgba(255,255,255,0.3);
-  letter-spacing: 0.5px;
-  margin-bottom: 3px;
-}
-
-.fc-slot:first-child .fc-label { color: rgba(255,255,255,0.6); font-weight: 600; }
-
-.fc-icon { font-size: 18px; line-height: 1.3; }
-
-.fc-temp {
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
-  margin-top: 2px;
-  font-family: 'Roboto Mono', 'Courier New', monospace;
-}
-
-.fc-slot:first-child .fc-temp { color: #ffffff; }
-
-.weather-updated {
-  font-size: 10px;
-  color: rgba(255,255,255,0.18);
-  margin-top: 6px;
-  text-align: left;
-}
+.fc-slot { -webkit-box-flex:1; -webkit-flex:1; flex:1; text-align:center; }
+.fc-label { font-size:10px; color:rgba(255,255,255,0.3); margin-bottom:2px; }
+.fc-slot:first-child .fc-label { color:rgba(255,255,255,0.6); font-weight:600; }
+.fc-icon { font-size:15px; line-height:1.3; }
+.fc-temp { font-size:12px; color:rgba(255,255,255,0.8); margin-top:1px; font-family:'Roboto Mono','Courier New',monospace; }
+.fc-slot:first-child .fc-temp { color:#fff; }
+.weather-updated { font-size:10px; color:rgba(255,255,255,0.18); margin-top:4px; text-align:right; }
 
 /* ─── BUSES ─── */
 .bus-row {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display:-webkit-box; display:-webkit-flex; display:flex;
+  -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+  padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-
-.bus-row:last-of-type { border-bottom: none; }
+.bus-row:last-of-type { border-bottom:none; padding-bottom:0; }
+.bus-row:first-of-type { padding-top:0; }
 
 .bus-badge {
-  font-family: 'Oswald', Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  width: 46px;
-  height: 28px;
-  line-height: 28px;
-  text-align: center;
-  border-radius: 6px;
-  margin-right: 10px;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
+  font-family:'Oswald',Arial,sans-serif; font-size:15px; font-weight:600;
+  width:42px; height:26px; line-height:26px; text-align:center;
+  border-radius:5px; margin-right:8px; -webkit-flex-shrink:0; flex-shrink:0;
 }
+.bus-badge.b161 { background:#1a4a8a; color:#7bb8ff; border:1px solid #2a6acf; }
+.bus-badge.b312 { background:#1a5a3a; color:#5dcc88; border:1px solid #2a8a5a; }
 
-.bus-badge.b161 { background: #1a4a8a; color: #7bb8ff; border: 1px solid #2a6acf; }
-.bus-badge.b312 { background: #1a5a3a; color: #5dcc88; border: 1px solid #2a8a5a; }
+.bus-next { font-size:15px; color:rgba(255,255,255,0.4); -webkit-box-flex:1; -webkit-flex:1; flex:1; }
+.bus-next.soon { color:#ff9444; }
+.bus-next.very-soon { color:#ff4444; font-weight:600; }
 
-.bus-next {
-  font-size: 19px;
-  color: rgba(255,255,255,0.5);
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-  flex: 1;
-}
-
-.bus-next.soon { color: #ff9444; font-size: 19px; }
-.bus-next.very-soon { color: #ff4444; font-weight: 600; font-size: 19px; }
-
-.bus-times {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  gap: 6px;
-}
-
+.bus-times { display:-webkit-box; display:-webkit-flex; display:flex; gap:4px; }
 .bus-time {
-  font-family: 'Roboto Mono', 'Courier New', monospace;
-  color: #ffffff;
-  background: rgba(255,255,255,0.08);
-  padding: 4px 8px;
-  border-radius: 5px;
-  text-align: center;
-  min-width: 52px;
+  font-family:'Roboto Mono','Courier New',monospace; color:#fff;
+  background:rgba(255,255,255,0.08); padding:3px 6px; border-radius:4px; text-align:center;
 }
+.bus-hhmm { display:block; font-size:12px; font-weight:400; line-height:1.2; }
+.bus-time.soon { color:#ff9444; background:rgba(255,148,68,0.12); }
+.bus-time.very-soon { color:#ff4444; background:rgba(255,68,68,0.12); }
+.bus-updated { font-size:10px; color:rgba(255,255,255,0.18); margin-top:4px; text-align:right; }
 
-.bus-hhmm { display: block; font-size: 14px; font-weight: 400; line-height: 1.2; }
-.bus-time.soon { color: #ff9444; background: rgba(255,148,68,0.12); }
-.bus-time.very-soon { color: #ff4444; background: rgba(255,68,68,0.12); }
-
-.bus-updated {
-  font-size: 10px;
-  color: rgba(255,255,255,0.18);
-  margin-top: 6px;
-  text-align: left;
+/* ─── QUOTE ─── */
+.quote-header {
+  display:-webkit-box; display:-webkit-flex; display:flex;
+  -webkit-box-pack:justify; -webkit-justify-content:space-between; justify-content:space-between;
+  -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+  margin-bottom:8px;
+}
+.quote-text { font-size:16px; font-weight:300; color:rgba(255,255,255,0.82); line-height:1.55; font-style:italic; }
+.quote-author { font-size:11px; color:rgba(255,255,255,0.25); margin-top:6px; letter-spacing:1px; text-transform:uppercase; }
+.shuffle-btn {
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.6); font-size:20px; width:32px; height:32px;
+  border-radius:8px; cursor:pointer; line-height:1; padding:0;
 }
 
 /* ─── SCHEDULE ─── */
+.schedule-cols {
+  display:-webkit-box; display:-webkit-flex; display:flex;
+  gap:12px; -webkit-box-flex:1; -webkit-flex:1; flex:1; min-height:0; overflow:hidden;
+}
+.schedule-col { -webkit-box-flex:1; -webkit-flex:1; flex:1; min-width:0; overflow:hidden; }
+
 .schedule-day-label {
-  font-size: 10px;
-  color: rgba(255,255,255,0.25);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
+  font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:2px;
+  text-transform:uppercase; margin-bottom:5px; padding-bottom:4px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
 }
-
 .schedule-item {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display:-webkit-box; display:-webkit-flex; display:flex;
+  -webkit-box-align:center; -webkit-align-items:center; align-items:center;
+  padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.04);
 }
-
-.schedule-item:last-child { border-bottom: none; }
-.schedule-item.past { opacity: 0.3; }
+.schedule-item:last-child { border-bottom:none; }
+.schedule-item.past { opacity:0.3; }
 
 .schedule-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  margin-top: 5px;
-  margin-right: 10px;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
+  width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.2);
+  margin-right:8px; -webkit-flex-shrink:0; flex-shrink:0;
 }
-
-.schedule-item.current .schedule-dot {
-  background: #5dcc88;
-  -webkit-box-shadow: 0 0 6px rgba(93,204,136,0.6);
-  box-shadow: 0 0 6px rgba(93,204,136,0.6);
-}
+.schedule-item.current .schedule-dot { background:#5dcc88; -webkit-box-shadow:0 0 6px rgba(93,204,136,0.6); box-shadow:0 0 6px rgba(93,204,136,0.6); }
 
 .schedule-time {
-  font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 14px;
-  color: rgba(255,255,255,0.55);
-  width: 100px;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-  padding-top: 2px;
-  margin-right: 10px;
+  font-family:'Roboto Mono','Courier New',monospace; font-size:12px;
+  color:rgba(255,255,255,0.45); width:88px; -webkit-flex-shrink:0; flex-shrink:0; padding-top:1px;
 }
+.schedule-item.current .schedule-time { color:#5dcc88; }
 
-.schedule-item.current .schedule-time { color: #5dcc88; }
-
-.schedule-info {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-}
-
-.schedule-title {
-  font-size: 16px;
-  color: rgba(255,255,255,0.88);
-  line-height: 1.3;
-}
-
-.schedule-meta {
-  font-size: 11px;
-  color: rgba(255,255,255,0.3);
-  margin-top: 1px;
-  letter-spacing: 0.3px;
-}
-
-.schedule-item.current .schedule-title { color: #ffffff; font-weight: 400; }
-.schedule-empty { font-size: 13px; color: rgba(255,255,255,0.2); padding: 6px 0; }
-
-.schedule-tomorrow {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-/* ─── QUOTE ─── */
-.quote-text {
-  font-size: 24px;
-  font-weight: 300;
-  color: rgba(255,255,255,0.82);
-  line-height: 1.6;
-  font-style: italic;
-}
-
-.quote-author {
-  font-size: 12px;
-  color: rgba(255,255,255,0.22);
-  margin-top: 6px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.quote-header {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.shuffle-btn {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.6);
-  font-size: 22px;
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-}
-
-/* ─── STATUS ─── */
-.status-row {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  color: rgba(255,255,255,0.15);
-  letter-spacing: 1px;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(93,204,136,0.5);
-}
-
-.version {
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  margin-left: 10px;
-}
+.schedule-info { display:-webkit-box; display:-webkit-flex; display:flex; -webkit-box-orient:vertical; -webkit-flex-direction:column; flex-direction:column; min-width:0; }
+.schedule-title { font-size:14px; color:rgba(255,255,255,0.88); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.schedule-item.current .schedule-title { color:#fff; font-weight:400; }
+.schedule-meta { font-size:10px; color:rgba(255,255,255,0.28); margin-top:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.schedule-empty { font-size:12px; color:rgba(255,255,255,0.2); padding:4px 0; }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- TOP BAR: clock + date -->
+  <!-- TOP BAR: date left, clock right -->
   <div class="top-bar">
     <div>
       <div class="clock-date" id="clock-date">загрузка...</div>
-      <div class="status-row" style="margin-top:4px;">
+      <div class="status-row">
         <div class="status-dot"></div>
         <span id="status-time">—</span>
-        <span class="version">v9</span>
+        <span class="version">v11</span>
       </div>
     </div>
     <div class="clock-time" id="clock-time">00<span class="colon">:</span>00</div>
   </div>
 
-  <!-- TWO COLUMNS -->
-  <div class="columns">
+  <div class="body">
 
-    <!-- LEFT: weather + quote -->
+    <!-- LEFT: buses + quote -->
     <div class="col-left">
-
-      <div class="card">
-        <div class="card-header">Погода · Прага</div>
-        <div id="weather-content">
-          <div class="weather-main">
-            <div>
-              <div class="weather-temp">—<sup>°C</sup></div>
-              <div class="weather-desc">загрузка...</div>
-            </div>
-            <div class="weather-icon">🌤</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card card-grow">
-        <div class="quote-header">
-          <div class="card-header" style="margin-bottom:0">Цитата дня</div>
-          <button class="shuffle-btn" onclick="nextQuote()">↻</button>
-        </div>
-        <div class="quote-text" id="quote-text">...</div>
-        <div class="quote-author" id="quote-author"></div>
-      </div>
-
-    </div>
-
-    <!-- RIGHT: buses + schedule -->
-    <div class="col-right">
 
       <div class="card">
         <div class="card-header">Автобусы · Škola Nebušice → Bořislavka</div>
@@ -571,9 +266,43 @@ body:before {
       </div>
 
       <div class="card card-grow">
+        <div class="quote-header">
+          <div class="card-header" style="margin-bottom:0">Цитата дня</div>
+          <button class="shuffle-btn" onclick="nextQuote()">↻</button>
+        </div>
+        <div class="quote-text" id="quote-text">...</div>
+        <div class="quote-author" id="quote-author"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: weather top + schedule bottom -->
+    <div class="col-right">
+
+      <div class="card">
+        <div class="card-header">Погода · Прага</div>
+        <div id="weather-content">
+          <div class="weather-row">
+            <div class="weather-left">
+              <div class="weather-temp">—<sup>°C</sup></div>
+              <div class="weather-desc">загрузка...</div>
+              <div class="weather-details">
+                <div class="weather-detail">Влажность <span>—</span>%</div>
+                <div class="weather-detail">Ветер <span>—</span> км/ч</div>
+                <div class="weather-detail">Ощущается <span>—</span>°</div>
+              </div>
+            </div>
+            <div class="weather-icon">⛅</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-grow">
         <div class="card-header">Расписание · Алиса</div>
-        <div id="schedule-today"></div>
-        <div id="schedule-tomorrow"></div>
+        <div class="schedule-cols">
+          <div class="schedule-col" id="schedule-today"></div>
+          <div class="schedule-col" id="schedule-tomorrow"></div>
+        </div>
       </div>
 
     </div>
@@ -582,6 +311,8 @@ body:before {
 </div>
 
 <script>
+
+
 
 // ─── UTILS ───────────────────────────────────────────────
 var DAYS_RU = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
@@ -610,13 +341,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '6',
-  feels: '3',
-  humidity: '50',
-  wind: '2',
+  temp: '__TEMP__',
+  feels: '__FEELS__',
+  humidity: '__HUMIDITY__',
+  wind: '__WIND__',
   code: 0,
-  updatedAt: '07.04 03:51',
-  forecast: [{"label": "Сейчас", "temp": 6, "code": 0}, {"label": "04:00", "temp": 6, "code": 0}, {"label": "05:00", "temp": 5, "code": 1}, {"label": "06:00", "temp": 4, "code": 0}, {"label": "07:00", "temp": 4, "code": 1}, {"label": "08:00", "temp": 5, "code": 0}]
+  updatedAt: '__UPDATED_AT__',
+  forecast: []
 };
 // ── END WEATHER DATA ──
 
@@ -762,7 +493,7 @@ setInterval(updateBuses, 60 * 1000);
 // Hardcoded events from Veracross (update as needed)
 // Format: { date: 'YYYY-MM-DD', start: 'HH:MM', end: 'HH:MM', title: '...' }
 // All-day events: omit start/end or use start:'00:00', end:'23:59'
-var ALISA_EVENTS = [{"date": "2026-04-07", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-04-07", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-04-07", "start": "11:10", "end": "12:15", "title": "Girls Code: Python", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-04-07", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-04-07", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-04-08", "start": "10:40", "end": "11:35", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-04-08", "start": "11:40", "end": "12:35", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-04-08", "start": "13:35", "end": "14:30", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-04-08", "start": "14:35", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-04-08", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-04-09", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-04-09", "start": "11:10", "end": "12:15", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-04-09", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-04-09", "start": "14:25", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-04-09", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-04-10", "start": "08:45", "end": "09:50", "title": "Girls Code: Python", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-04-10", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-04-10", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-04-10", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-04-10", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}, {"date": "2026-04-20", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-04-20", "start": "11:10", "end": "12:15", "title": "Individuals & Societies", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-04-20", "start": "13:15", "end": "14:20", "title": "Maths", "day": "MS3-BCDEA", "room": "135"}, {"date": "2026-04-20", "start": "14:25", "end": "15:30", "title": "Science", "day": "MS3-BCDEA", "room": "140"}, {"date": "2026-04-21", "start": "08:45", "end": "09:50", "title": "Maths", "day": "MS4-GHIJF", "room": "135"}, {"date": "2026-04-21", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-04-21", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS4-GHIJF", "room": "186"}, {"date": "2026-04-21", "start": "13:15", "end": "14:20", "title": "Language & Literature", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-04-21", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS4-GHIJF", "room": ""}, {"date": "2026-04-22", "start": "09:35", "end": "10:30", "title": "Spanish G6", "day": "MS5-CDEAB", "room": "186"}, {"date": "2026-04-22", "start": "10:40", "end": "11:35", "title": "PHE", "day": "MS5-CDEAB", "room": ""}, {"date": "2026-04-22", "start": "11:40", "end": "12:35", "title": "Design", "day": "MS5-CDEAB", "room": "Idea Lab (129)"}, {"date": "2026-04-22", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS5-CDEAB", "room": "140"}, {"date": "2026-04-22", "start": "14:35", "end": "15:30", "title": "Eco Club", "day": "MS5-CDEAB", "room": "Band (177)"}, {"date": "2026-04-22", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-04-23", "start": "08:45", "end": "09:50", "title": "Language & Literature", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-04-23", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-04-23", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS6-HIJFG", "room": "186"}, {"date": "2026-04-23", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS6-HIJFG", "room": "Idea Lab (129)"}, {"date": "2026-04-23", "start": "14:25", "end": "15:30", "title": "Music", "day": "MS6-HIJFG", "room": "Band (177)"}, {"date": "2026-04-23", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-04-24", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS7-DEABC", "room": "186"}, {"date": "2026-04-24", "start": "10:00", "end": "11:05", "title": "Science", "day": "MS7-DEABC", "room": "140"}, {"date": "2026-04-24", "start": "11:10", "end": "12:15", "title": "Maths", "day": "MS7-DEABC", "room": "135"}, {"date": "2026-04-24", "start": "13:15", "end": "14:20", "title": "Eco Club", "day": "MS7-DEABC", "room": "Band (177)"}, {"date": "2026-04-24", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS7-DEABC", "room": "137"}, {"date": "2026-04-27", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS8-IJFGH", "room": "140"}, {"date": "2026-04-27", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS8-IJFGH", "room": "135"}, {"date": "2026-04-27", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS8-IJFGH", "room": "Band (177)"}, {"date": "2026-04-27", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS8-IJFGH", "room": "137"}, {"date": "2026-04-29", "start": "09:35", "end": "10:30", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-04-29", "start": "10:40", "end": "11:35", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-04-29", "start": "11:40", "end": "12:35", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-04-29", "start": "13:35", "end": "14:30", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-04-29", "start": "14:35", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-04-29", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-04-30", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-04-30", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-04-30", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-04-30", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-04-30", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-05-04", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-05-04", "start": "11:10", "end": "12:15", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-05-04", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-05-04", "start": "14:25", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-05-05", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-05-05", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-05-05", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-05-05", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-05-05", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}, {"date": "2026-05-06", "start": "10:40", "end": "11:35", "title": "Language & Literature", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-05-06", "start": "11:40", "end": "12:35", "title": "Individuals & Societies", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-05-06", "start": "13:35", "end": "14:30", "title": "Maths", "day": "MS3-BCDEA", "room": "135"}, {"date": "2026-05-06", "start": "14:35", "end": "15:30", "title": "Science", "day": "MS3-BCDEA", "room": "140"}, {"date": "2026-05-06", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-05-07", "start": "08:45", "end": "09:50", "title": "Maths", "day": "MS4-GHIJF", "room": "135"}, {"date": "2026-05-07", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-05-07", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS4-GHIJF", "room": "186"}, {"date": "2026-05-07", "start": "13:15", "end": "14:20", "title": "Language & Literature", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-05-07", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS4-GHIJF", "room": ""}, {"date": "2026-05-07", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-05-11", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS5-CDEAB", "room": "186"}, {"date": "2026-05-11", "start": "10:00", "end": "11:05", "title": "PHE", "day": "MS5-CDEAB", "room": ""}, {"date": "2026-05-11", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS5-CDEAB", "room": "Idea Lab (129)"}, {"date": "2026-05-11", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS5-CDEAB", "room": "140"}, {"date": "2026-05-11", "start": "14:25", "end": "15:30", "title": "Eco Club", "day": "MS5-CDEAB", "room": "Band (177)"}, {"date": "2026-05-12", "start": "08:45", "end": "09:50", "title": "Language & Literature", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-05-12", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-05-12", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS6-HIJFG", "room": "186"}, {"date": "2026-05-12", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS6-HIJFG", "room": "Idea Lab (129)"}, {"date": "2026-05-12", "start": "14:25", "end": "15:30", "title": "Music", "day": "MS6-HIJFG", "room": "Band (177)"}, {"date": "2026-05-13", "start": "09:35", "end": "10:30", "title": "Spanish G6", "day": "MS7-DEABC", "room": "186"}, {"date": "2026-05-13", "start": "10:40", "end": "11:35", "title": "Science", "day": "MS7-DEABC", "room": "140"}, {"date": "2026-05-13", "start": "11:40", "end": "12:35", "title": "Maths", "day": "MS7-DEABC", "room": "135"}, {"date": "2026-05-13", "start": "13:35", "end": "14:30", "title": "Eco Club", "day": "MS7-DEABC", "room": "Band (177)"}, {"date": "2026-05-13", "start": "14:35", "end": "15:30", "title": "Individuals & Societies", "day": "MS7-DEABC", "room": "137"}, {"date": "2026-05-13", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-05-14", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS8-IJFGH", "room": "140"}, {"date": "2026-05-14", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS8-IJFGH", "room": "135"}, {"date": "2026-05-14", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS8-IJFGH", "room": "Band (177)"}, {"date": "2026-05-14", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS8-IJFGH", "room": "137"}, {"date": "2026-05-14", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-05-15", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-05-15", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-05-15", "start": "11:10", "end": "12:15", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-05-15", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-05-15", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-05-18", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-05-18", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-05-18", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-05-18", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-05-20", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-05-20", "start": "11:40", "end": "12:35", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-05-20", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-05-20", "start": "14:35", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-05-20", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-05-21", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-05-21", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-05-21", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-05-21", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-05-21", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}, {"date": "2026-05-21", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-05-22", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-05-22", "start": "11:10", "end": "12:15", "title": "Individuals & Societies", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-05-22", "start": "13:15", "end": "14:20", "title": "Maths", "day": "MS3-BCDEA", "room": "135"}, {"date": "2026-05-22", "start": "14:25", "end": "15:30", "title": "Science", "day": "MS3-BCDEA", "room": "140"}, {"date": "2026-05-25", "start": "08:45", "end": "09:50", "title": "Maths", "day": "MS4-GHIJF", "room": "135"}, {"date": "2026-05-25", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-05-25", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS4-GHIJF", "room": "186"}, {"date": "2026-05-25", "start": "13:15", "end": "14:20", "title": "Language & Literature", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-05-25", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS4-GHIJF", "room": ""}, {"date": "2026-05-26", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS5-CDEAB", "room": "186"}, {"date": "2026-05-26", "start": "10:00", "end": "11:05", "title": "PHE", "day": "MS5-CDEAB", "room": ""}, {"date": "2026-05-26", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS5-CDEAB", "room": "Idea Lab (129)"}, {"date": "2026-05-26", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS5-CDEAB", "room": "140"}, {"date": "2026-05-26", "start": "14:25", "end": "15:30", "title": "Eco Club", "day": "MS5-CDEAB", "room": "Band (177)"}, {"date": "2026-05-27", "start": "09:35", "end": "10:30", "title": "Language & Literature", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-05-27", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-05-27", "start": "11:40", "end": "12:35", "title": "Spanish G6", "day": "MS6-HIJFG", "room": "186"}, {"date": "2026-05-27", "start": "13:35", "end": "14:30", "title": "Design", "day": "MS6-HIJFG", "room": "Idea Lab (129)"}, {"date": "2026-05-27", "start": "14:35", "end": "15:30", "title": "Music", "day": "MS6-HIJFG", "room": "Band (177)"}, {"date": "2026-05-27", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-05-28", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS7-DEABC", "room": "186"}, {"date": "2026-05-28", "start": "10:00", "end": "11:05", "title": "Science", "day": "MS7-DEABC", "room": "140"}, {"date": "2026-05-28", "start": "11:10", "end": "12:15", "title": "Maths", "day": "MS7-DEABC", "room": "135"}, {"date": "2026-05-28", "start": "13:15", "end": "14:20", "title": "Eco Club", "day": "MS7-DEABC", "room": "Band (177)"}, {"date": "2026-05-28", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS7-DEABC", "room": "137"}, {"date": "2026-05-28", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-05-29", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS8-IJFGH", "room": "140"}, {"date": "2026-05-29", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS8-IJFGH", "room": "135"}, {"date": "2026-05-29", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS8-IJFGH", "room": "Band (177)"}, {"date": "2026-05-29", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS8-IJFGH", "room": "137"}, {"date": "2026-06-01", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-06-01", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-06-01", "start": "11:10", "end": "12:15", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-06-01", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-06-01", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-06-02", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-06-02", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-06-02", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-06-02", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-06-03", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-06-03", "start": "11:40", "end": "12:35", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-06-03", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-06-03", "start": "14:35", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-06-03", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-06-04", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-04", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-04", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-04", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-04", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}, {"date": "2026-06-04", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-06-05", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-06-05", "start": "11:10", "end": "12:15", "title": "Individuals & Societies", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-06-05", "start": "13:15", "end": "14:20", "title": "Maths", "day": "MS3-BCDEA", "room": "135"}, {"date": "2026-06-05", "start": "14:25", "end": "15:30", "title": "Science", "day": "MS3-BCDEA", "room": "140"}, {"date": "2026-06-08", "start": "08:45", "end": "09:50", "title": "Maths", "day": "MS4-GHIJF", "room": "135"}, {"date": "2026-06-08", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-06-08", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS4-GHIJF", "room": "186"}, {"date": "2026-06-08", "start": "13:15", "end": "14:20", "title": "Language & Literature", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-06-08", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS4-GHIJF", "room": ""}, {"date": "2026-06-09", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS5-CDEAB", "room": "186"}, {"date": "2026-06-09", "start": "10:00", "end": "11:05", "title": "PHE", "day": "MS5-CDEAB", "room": ""}, {"date": "2026-06-09", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS5-CDEAB", "room": "Idea Lab (129)"}, {"date": "2026-06-09", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS5-CDEAB", "room": "140"}, {"date": "2026-06-09", "start": "14:25", "end": "15:30", "title": "Eco Club", "day": "MS5-CDEAB", "room": "Band (177)"}, {"date": "2026-06-10", "start": "09:35", "end": "10:30", "title": "Language & Literature", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-06-10", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-06-10", "start": "11:40", "end": "12:35", "title": "Spanish G6", "day": "MS6-HIJFG", "room": "186"}, {"date": "2026-06-10", "start": "13:35", "end": "14:30", "title": "Design", "day": "MS6-HIJFG", "room": "Idea Lab (129)"}, {"date": "2026-06-10", "start": "14:35", "end": "15:30", "title": "Music", "day": "MS6-HIJFG", "room": "Band (177)"}, {"date": "2026-06-10", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-06-11", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS7-DEABC", "room": "186"}, {"date": "2026-06-11", "start": "10:00", "end": "11:05", "title": "Science", "day": "MS7-DEABC", "room": "140"}, {"date": "2026-06-11", "start": "11:10", "end": "12:15", "title": "Maths", "day": "MS7-DEABC", "room": "135"}, {"date": "2026-06-11", "start": "13:15", "end": "14:20", "title": "Eco Club", "day": "MS7-DEABC", "room": "Band (177)"}, {"date": "2026-06-11", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS7-DEABC", "room": "137"}, {"date": "2026-06-11", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-06-12", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS8-IJFGH", "room": "140"}, {"date": "2026-06-12", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS8-IJFGH", "room": "135"}, {"date": "2026-06-12", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS8-IJFGH", "room": "Band (177)"}, {"date": "2026-06-12", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS8-IJFGH", "room": "137"}, {"date": "2026-06-15", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-06-15", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-06-15", "start": "11:10", "end": "12:15", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-06-15", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-06-15", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-06-16", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-06-16", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-06-16", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-06-16", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-06-17", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-06-17", "start": "11:40", "end": "12:35", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-06-17", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-06-17", "start": "14:35", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}];
+var ALISA_EVENTS = [{"date": "2026-04-07", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-04-07", "start": "11:10", "end": "12:15", "title": "Girls Code: Python"}, {"date": "2026-04-07", "start": "13:15", "end": "14:20", "title": "Language & Literature"}, {"date": "2026-04-07", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-04-08", "start": "11:40", "end": "12:35", "title": "Language & Literature"}, {"date": "2026-04-08", "start": "13:35", "end": "14:30", "title": "Spanish"}, {"date": "2026-04-08", "start": "14:35", "end": "15:30", "title": "PHE"}, {"date": "2026-04-08", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-04-09", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-04-09", "start": "11:10", "end": "12:15", "title": "Music"}, {"date": "2026-04-09", "start": "13:15", "end": "14:20", "title": "Science"}, {"date": "2026-04-09", "start": "14:25", "end": "15:30", "title": "Maths"}, {"date": "2026-04-09", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-04-10", "start": "08:45", "end": "09:50", "title": "Girls Code: Python"}, {"date": "2026-04-10", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-04-10", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-04-10", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-04-20", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-04-20", "start": "10:00", "end": "11:05", "title": "Language & Literature"}, {"date": "2026-04-20", "start": "11:10", "end": "12:15", "title": "Individuals & Societies"}, {"date": "2026-04-20", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-04-20", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-04-21", "start": "08:45", "end": "09:50", "title": "Maths"}, {"date": "2026-04-21", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-04-21", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-04-21", "start": "13:15", "end": "14:20", "title": "Language & Literature"}, {"date": "2026-04-21", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-04-22", "start": "09:35", "end": "10:30", "title": "Spanish"}, {"date": "2026-04-22", "start": "10:40", "end": "11:35", "title": "PHE"}, {"date": "2026-04-22", "start": "11:40", "end": "12:35", "title": "Design"}, {"date": "2026-04-22", "start": "13:35", "end": "14:30", "title": "Science"}, {"date": "2026-04-22", "start": "14:35", "end": "15:30", "title": "🌿 Эко клуб"}, {"date": "2026-04-22", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-04-23", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-04-23", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-04-23", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-04-23", "start": "13:15", "end": "14:20", "title": "Design"}, {"date": "2026-04-23", "start": "14:25", "end": "15:30", "title": "Music"}, {"date": "2026-04-23", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-04-24", "start": "08:45", "end": "09:50", "title": "Spanish"}, {"date": "2026-04-24", "start": "10:00", "end": "11:05", "title": "Science"}, {"date": "2026-04-24", "start": "11:10", "end": "12:15", "title": "Maths"}, {"date": "2026-04-24", "start": "13:15", "end": "14:20", "title": "🌿 Эко клуб"}, {"date": "2026-04-24", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-04-27", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-04-27", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-04-27", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-04-27", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-04-27", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-04-29", "start": "09:35", "end": "10:30", "title": "Science"}, {"date": "2026-04-29", "start": "10:40", "end": "11:35", "title": "🌿 Эко клуб"}, {"date": "2026-04-29", "start": "11:40", "end": "12:35", "title": "Girls Code: Python"}, {"date": "2026-04-29", "start": "13:35", "end": "14:30", "title": "Language & Literature"}, {"date": "2026-04-29", "start": "14:35", "end": "15:30", "title": "PHE"}, {"date": "2026-04-29", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-04-30", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-04-30", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-04-30", "start": "11:10", "end": "12:15", "title": "Language & Literature"}, {"date": "2026-04-30", "start": "13:15", "end": "14:20", "title": "Spanish"}, {"date": "2026-04-30", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-05-04", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-05-04", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-05-04", "start": "11:10", "end": "12:15", "title": "Music"}, {"date": "2026-05-04", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-05-04", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-05-05", "start": "08:45", "end": "09:50", "title": "Spanish"}, {"date": "2026-05-05", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-05-05", "start": "11:10", "end": "12:15", "title": "Individuals & Societies"}, {"date": "2026-05-05", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-05-05", "start": "14:25", "end": "15:30", "title": "Language & Literature"}, {"date": "2026-05-06", "start": "09:35", "end": "10:30", "title": "Music"}, {"date": "2026-05-06", "start": "10:40", "end": "11:35", "title": "Language & Literature"}, {"date": "2026-05-06", "start": "11:40", "end": "12:35", "title": "Individuals & Societies"}, {"date": "2026-05-06", "start": "13:35", "end": "14:30", "title": "Maths"}, {"date": "2026-05-06", "start": "14:35", "end": "15:30", "title": "Science"}, {"date": "2026-05-06", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-05-07", "start": "08:45", "end": "09:50", "title": "Maths"}, {"date": "2026-05-07", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-05-07", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-05-07", "start": "13:15", "end": "14:20", "title": "Language & Literature"}, {"date": "2026-05-07", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-05-07", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-05-11", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-05-11", "start": "10:00", "end": "11:05", "title": "PHE"}, {"date": "2026-05-11", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-05-11", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-05-11", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-05-12", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-05-12", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-05-12", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-05-12", "start": "13:15", "end": "14:20", "title": "Design"}, {"date": "2026-05-12", "start": "14:25", "end": "15:30", "title": "Music"}, {"date": "2026-05-13", "start": "09:35", "end": "10:30", "title": "Spanish"}, {"date": "2026-05-13", "start": "10:40", "end": "11:35", "title": "Maths"}, {"date": "2026-05-13", "start": "11:40", "end": "12:35", "title": "🌿 Эко клуб"}, {"date": "2026-05-13", "start": "13:35", "end": "14:30", "title": "🌿 Эко клуб"}, {"date": "2026-05-13", "start": "14:35", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-05-13", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-05-14", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-05-14", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-05-14", "start": "11:10", "end": "12:15", "title": "Music"}, {"date": "2026-05-14", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-05-14", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-05-14", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-05-15", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-05-15", "start": "10:00", "end": "11:05", "title": "Language & Literature"}, {"date": "2026-05-15", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-05-15", "start": "13:15", "end": "14:20", "title": "Design"}, {"date": "2026-05-15", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-05-18", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-05-18", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-05-18", "start": "11:10", "end": "12:15", "title": "Language & Literature"}, {"date": "2026-05-18", "start": "13:15", "end": "14:20", "title": "Spanish"}, {"date": "2026-05-18", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-05-20", "start": "09:35", "end": "10:30", "title": "Music"}, {"date": "2026-05-20", "start": "10:40", "end": "11:35", "title": "Individuals & Societies"}, {"date": "2026-05-20", "start": "11:40", "end": "12:35", "title": "Music"}, {"date": "2026-05-20", "start": "13:35", "end": "14:30", "title": "Maths"}, {"date": "2026-05-20", "start": "14:35", "end": "15:30", "title": "Science"}, {"date": "2026-05-20", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-05-21", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-05-21", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-05-21", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-05-21", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-05-21", "start": "14:25", "end": "15:30", "title": "Language & Literature"}, {"date": "2026-05-22", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-05-22", "start": "10:00", "end": "11:05", "title": "Language & Literature"}, {"date": "2026-05-22", "start": "11:10", "end": "12:15", "title": "Individuals & Societies"}, {"date": "2026-05-22", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-05-22", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-05-25", "start": "08:45", "end": "09:50", "title": "Maths"}, {"date": "2026-05-25", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-05-25", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-05-25", "start": "13:15", "end": "14:20", "title": "Language & Literature"}, {"date": "2026-05-25", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-05-26", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-05-26", "start": "10:00", "end": "11:05", "title": "PHE"}, {"date": "2026-05-26", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-05-26", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-05-26", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-05-27", "start": "09:35", "end": "10:30", "title": "Language & Literature"}, {"date": "2026-05-27", "start": "10:40", "end": "11:35", "title": "Individuals & Societies"}, {"date": "2026-05-27", "start": "11:40", "end": "12:35", "title": "Spanish"}, {"date": "2026-05-27", "start": "13:35", "end": "14:30", "title": "Design"}, {"date": "2026-05-27", "start": "14:35", "end": "15:30", "title": "Music"}, {"date": "2026-05-27", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-05-28", "start": "08:45", "end": "09:50", "title": "Spanish"}, {"date": "2026-05-28", "start": "10:00", "end": "11:05", "title": "Science"}, {"date": "2026-05-28", "start": "11:10", "end": "12:15", "title": "Maths"}, {"date": "2026-05-28", "start": "13:15", "end": "14:20", "title": "🌿 Эко клуб"}, {"date": "2026-05-28", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-05-28", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-05-29", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-05-29", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-05-29", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-05-29", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-05-29", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-06-01", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-06-01", "start": "10:00", "end": "11:05", "title": "Language & Literature"}, {"date": "2026-06-01", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-06-01", "start": "13:15", "end": "14:20", "title": "Design"}, {"date": "2026-06-01", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-06-02", "start": "08:45", "end": "09:50", "title": "Maths"}, {"date": "2026-06-02", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-06-02", "start": "11:10", "end": "12:15", "title": "Language & Literature"}, {"date": "2026-06-02", "start": "13:15", "end": "14:20", "title": "PHE"}, {"date": "2026-06-02", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-06-03", "start": "09:35", "end": "10:30", "title": "Music"}, {"date": "2026-06-03", "start": "10:40", "end": "11:35", "title": "Individuals & Societies"}, {"date": "2026-06-03", "start": "11:40", "end": "12:35", "title": "Music"}, {"date": "2026-06-03", "start": "13:35", "end": "14:30", "title": "Maths"}, {"date": "2026-06-03", "start": "14:35", "end": "15:30", "title": "Science"}, {"date": "2026-06-03", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-06-04", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-06-04", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-06-04", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-06-04", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-06-04", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-06-04", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-06-05", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-06-05", "start": "10:00", "end": "11:05", "title": "Science"}, {"date": "2026-06-05", "start": "11:10", "end": "12:15", "title": "Individuals & Societies"}, {"date": "2026-06-05", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-06-05", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-06-08", "start": "08:45", "end": "09:50", "title": "Maths"}, {"date": "2026-06-08", "start": "10:00", "end": "11:05", "title": "Individuals & Societies"}, {"date": "2026-06-08", "start": "11:10", "end": "12:15", "title": "Spanish"}, {"date": "2026-06-08", "start": "13:15", "end": "14:20", "title": "Language & Literature"}, {"date": "2026-06-08", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-06-09", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-06-09", "start": "10:00", "end": "11:05", "title": "PHE"}, {"date": "2026-06-09", "start": "11:10", "end": "12:15", "title": "Design"}, {"date": "2026-06-09", "start": "13:15", "end": "14:20", "title": "Maths"}, {"date": "2026-06-09", "start": "14:25", "end": "15:30", "title": "Science"}, {"date": "2026-06-10", "start": "09:35", "end": "10:30", "title": "Language & Literature"}, {"date": "2026-06-10", "start": "10:40", "end": "11:35", "title": "Individuals & Societies"}, {"date": "2026-06-10", "start": "11:40", "end": "12:35", "title": "Spanish"}, {"date": "2026-06-10", "start": "13:35", "end": "14:30", "title": "Design"}, {"date": "2026-06-10", "start": "14:35", "end": "15:30", "title": "Music"}, {"date": "2026-06-10", "start": "15:45", "end": "16:45", "title": "🚴 Горный велосипед"}, {"date": "2026-06-11", "start": "08:45", "end": "09:50", "title": "Spanish"}, {"date": "2026-06-11", "start": "10:00", "end": "11:05", "title": "Science"}, {"date": "2026-06-11", "start": "11:10", "end": "12:15", "title": "Maths"}, {"date": "2026-06-11", "start": "13:15", "end": "14:20", "title": "🌿 Эко клуб"}, {"date": "2026-06-11", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-06-11", "start": "15:40", "end": "16:40", "title": "🧵 Швейный клуб"}, {"date": "2026-06-12", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-06-12", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-06-12", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-06-12", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-06-12", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}, {"date": "2026-06-15", "start": "08:45", "end": "09:50", "title": "Science"}, {"date": "2026-06-15", "start": "10:00", "end": "11:05", "title": "Language & Literature"}, {"date": "2026-06-15", "start": "11:10", "end": "12:15", "title": "🌿 Эко клуб"}, {"date": "2026-06-15", "start": "13:15", "end": "14:20", "title": "Design"}, {"date": "2026-06-15", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-06-16", "start": "08:45", "end": "09:50", "title": "Language & Literature"}, {"date": "2026-06-16", "start": "10:00", "end": "11:05", "title": "Maths"}, {"date": "2026-06-16", "start": "11:10", "end": "12:15", "title": "Language & Literature"}, {"date": "2026-06-16", "start": "13:15", "end": "14:20", "title": "Spanish"}, {"date": "2026-06-16", "start": "14:25", "end": "15:30", "title": "PHE"}, {"date": "2026-06-17", "start": "09:35", "end": "10:30", "title": "Music"}, {"date": "2026-06-17", "start": "10:40", "end": "11:35", "title": "Individuals & Societies"}, {"date": "2026-06-17", "start": "11:40", "end": "12:35", "title": "Music"}, {"date": "2026-06-17", "start": "13:35", "end": "14:30", "title": "Maths"}, {"date": "2026-06-17", "start": "14:35", "end": "15:30", "title": "Science"}, {"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "🌿 Эко клуб"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Music"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Individuals & Societies"}];
 
 function toDateStr(date) {
   return date.getFullYear() + '-' +
@@ -900,6 +631,8 @@ function updateStatus() {
 
 setInterval(updateStatus, 5 * 60 * 1000);
 updateStatus();
+
+
 
 </script>
 </body>

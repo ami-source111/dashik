@@ -99,9 +99,10 @@ jobs:
               if dt.date() < today:
                 continue
 
-              # Parse Day from DESCRIPTION: "Block: A\; Day: MS1-ABCDE\; Room: 135"
-              day_m  = re.search(r'Day: ([^\\;\\\\]+)', desc)
-              room_m = re.search(r'Room: ([^\\;\\\\]+)', desc)
+              # Parse Day/Room from DESCRIPTION
+              desc_clean = desc.replace('\\;', '|').replace('\;', '|')
+              day_m  = re.search(r'Day: ([^|\\]+)', desc_clean)
+              room_m = re.search(r'Room: ([^|\\]+)', desc_clean)
               school_day = day_m.group(1).strip() if day_m else ''
               room       = room_m.group(1).strip() if room_m else location.strip()
 

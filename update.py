@@ -15,14 +15,18 @@ weather_url = (
     '?latitude=50.0755&longitude=14.4378'
     '&current_weather=true'
     '&hourly=relativehumidity_2m,apparent_temperature,windspeed_10m,temperature_2m,weathercode'
+    '&daily=weathercode,temperature_2m_max,temperature_2m_min'
     '&timezone=Europe%2FPrague'
-    '&forecast_days=1'
+    '&forecast_days=2'
 )
 
 temp = humidity = feels = wind = ''
 code = 0
 forecast = []
 weather_ok = False
+tom_code = 0
+tom_max = ''
+tom_min = ''
 
 for attempt in range(3):
     try:
@@ -43,8 +47,12 @@ for attempt in range(3):
             forecast.append({'label': label, 'temp': round(h['temperature_2m'][i]), 'code': int(h['weathercode'][i])})
             if len(forecast) >= 6:
                 break
+        # Tomorrow summary
+        tom_code = int(wd['daily']['weathercode'][1]) if 'daily' in wd else 0
+        tom_max  = round(wd['daily']['temperature_2m_max'][1]) if 'daily' in wd else ''
+        tom_min  = round(wd['daily']['temperature_2m_min'][1]) if 'daily' in wd else ''
         weather_ok = True
-        print(f"Weather: {temp}C code={code}")
+        print(f"Weather: {temp}C code={code}, tomorrow: code={tom_code} {tom_min}-{tom_max}C")
         break
     except Exception as e:
         print(f"Weather attempt {attempt+1} failed: {e}")
@@ -65,7 +73,7 @@ try:
     buses = []
     for dep in deps:
         route = dep['route']['short_name']
-        if route not in ('161', '312'):
+        if route not in ('161', '312', '907'):
             continue
         ts = dep['departure_timestamp'].get('predicted') or dep['departure_timestamp'].get('scheduled', '')
         if not ts:
@@ -170,6 +178,10 @@ with open('index.html', 'r', encoding='utf-8') as f:
 
 if weather_ok:
     html = re.sub(r"temp: '[^']*'",      "temp: '" + temp + "'",         html)
+    html = html.replace("tomCode: __TOM_CODE__", "tomCode: " + str(tom_code))
+    html = re.sub(r"tomCode: \d+", "tomCode: " + str(tom_code), html)
+    html = re.sub(r"tomMax: '[^']*'", "tomMax: '" + str(tom_max) + "'", html)
+    html = re.sub(r"tomMin: '[^']*'", "tomMin: '" + str(tom_min) + "'", html)
     html = re.sub(r"feels: '[^']*'",     "feels: '" + feels + "'",       html)
     html = re.sub(r"humidity: '[^']*'",  "humidity: '" + humidity + "'", html)
     html = re.sub(r"wind: '[^']*'",      "wind: '" + wind + "'",         html)

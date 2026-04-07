@@ -1,9 +1,16 @@
-import urllib.request, json, datetime, re, ssl
+import urllib.request, json, datetime, re, ssl, time
 
 TZ = 2  # Prague CEST = UTC+2
 
-# ── WEATHER ──────────────────────────────────────────────────────────────────
-url = (
+GOLEMIO_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTE3MSwiaWF0IjoxNzc1NTkwMjMwLCJleHAiOjExNzc1NTkwMjMwLCJpc3MiOiJnb2xlbWlvIiwianRpIjoiNDI0M2JmMzEtNjdkZS00NTA3LTk1YjEtNzJkYTU2YmJjZWZhIn0.UjHd1nfam7MUNy_JyZ7lAlkmYCc-bJv7qOL_oSD3kOE"
+STOP_ID = "U905Z2"  # Škola Nebušice B → Bořislavka
+
+now_dt   = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ)))
+now_h    = now_dt.hour
+updated_at = now_dt.strftime('%d.%m %H:%M')
+
+# ── WEATHER ───────────────────────────────────────────────────────────────────
+weather_url = (
     'https://api.open-meteo.com/v1/forecast'
     '?latitude=50.0755&longitude=14.4378'
     '&current_weather=true'
@@ -11,9 +18,6 @@ url = (
     '&timezone=Europe%2FPrague'
     '&forecast_days=1'
 )
-now_dt   = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ)))
-now_h    = now_dt.hour
-updated_at = now_dt.strftime('%d.%m %H:%M')
 
 temp = humidity = feels = wind = ''
 code = 0
@@ -22,7 +26,7 @@ weather_ok = False
 
 for attempt in range(3):
     try:
-        with urllib.request.urlopen(url, timeout=15) as r:
+        with urllib.request.urlopen(weather_url, timeout=15) as r:
             wd = json.loads(r.read())
         cw   = wd['current_weather']
         temp = str(round(cw['temperature']))
@@ -44,38 +48,59 @@ for attempt in range(3):
         break
     except Exception as e:
         print(f"Weather attempt {attempt+1} failed: {e}")
-        import time; time.sleep(5)
+        time.sleep(5)
 
-if not weather_ok:
-    print("Weather unavailable, keeping existing data")
+# ── BUSES (Golemio live) ──────────────────────────────────────────────────────
+buses_json = '[]'
+try:
+    bus_url = (
+        f'https://api.golemio.cz/v2/pid/departureboards'
+        f'?ids={STOP_ID}&minutesAfter=120&limit=12&includeMetroStops=false'
+    )
+    req = urllib.request.Request(bus_url, headers={'X-Access-Token': GOLEMIO_TOKEN})
+    with urllib.request.urlopen(req, timeout=15) as r:
+        bd = json.loads(r.read())
 
-# ── ICS SCHEDULE ─────────────────────────────────────────────────────────────
+    deps = bd.get('departures', [])
+    buses = []
+    for dep in deps:
+        route = dep['route']['short_name']
+        if route not in ('161', '312'):
+            continue
+        ts = dep['departure_timestamp'].get('predicted') or dep['departure_timestamp'].get('scheduled', '')
+        if not ts:
+            continue
+        # Parse ISO time e.g. "2026-04-07T21:34:44+02:00"
+        t_str = ts[11:16]  # "HH:MM"
+        dep_dt = datetime.datetime.fromisoformat(ts)
+        diff = int((dep_dt - now_dt).total_seconds() / 60)
+        if diff < 0:
+            continue
+        delay_s = dep.get('delay', {}).get('seconds', 0) or 0
+        buses.append({'route': route, 'time': t_str, 'diff': diff, 'delay': delay_s})
+
+    buses_json = json.dumps(buses, ensure_ascii=False)
+    print(f"Buses: {len(buses)} departures")
+except Exception as e:
+    print(f"Buses failed: {e}")
+
+# ── ICS SCHEDULE ──────────────────────────────────────────────────────────────
 ICS_URL = 'https://api.veracross.eu/isp/subscribe/5F8B8AC7-FD73-4B86-8E64-8A5774618990.ics?uid=52F8A28F-D369-4EC8-B945-4CBF8135B1D6'
-
 SKIP = {'Homeroom 6.3', 'Advisory-MS 6.3', 'MS Lunch'}
 
 events = []
-ics = ''
-
 try:
-    ctx = ssl.create_default_context()
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/calendar,*/*',
-        'Accept-Language': 'en-US,en;q=0.9',
     }
     req = urllib.request.Request(ICS_URL, headers=headers)
-    with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
+    with urllib.request.urlopen(req, timeout=30) as r:
         ics = r.read().decode('utf-8', errors='ignore')
-    print(f"ICS fetched: {len(ics)} bytes")
-except Exception as e:
-    print(f"ICS fetch failed: {e}")
+    print(f"ICS: {len(ics)} bytes")
 
-if ics:
     today = now_dt.date()
-
     for block in re.findall(r'BEGIN:VEVENT(.*?)END:VEVENT', ics, re.DOTALL):
-
         def get(field, blk=block):
             m = re.search(r'^' + field + r':(.+)$', blk, re.MULTILINE)
             return m.group(1).strip() if m else ''
@@ -83,7 +108,6 @@ if ics:
         summary = get('SUMMARY')
         if summary in SKIP:
             continue
-
         dtstart  = get('DTSTART')
         dtend    = get('DTEND')
         desc     = get('DESCRIPTION')
@@ -102,8 +126,6 @@ if ics:
         if dt.date() < today:
             continue
 
-        # Parse Day and Room from DESCRIPTION
-        # Format: "Block: A\; Day: MS1-ABCDE\; Room: 135"
         desc_parts = re.split(r'\\;', desc)
         school_day = ''
         room = location.strip()
@@ -114,12 +136,10 @@ if ics:
             elif part.startswith('Room:'):
                 room = part[5:].strip()
 
-        # Prettify room: "129 - Idea Lab" -> "Idea Lab (129)"
         if ' - ' in room:
             parts = room.split(' - ', 1)
             room = parts[1].strip() + ' (' + parts[0].strip() + ')'
 
-        # Shorten summary: remove "MS " prefix and version like "6.1"
         short = re.sub(r'\s+\d+\.\d+$', '', summary)
         short = re.sub(r'^MS ', '', short)
 
@@ -132,7 +152,6 @@ if ics:
             'room':  room,
         })
 
-    # Deduplicate and sort
     seen = set()
     uniq = []
     for ev in events:
@@ -141,7 +160,9 @@ if ics:
             seen.add(key)
             uniq.append(ev)
     events = sorted(uniq, key=lambda x: (x['date'], x['start']))
-    print(f"Events parsed: {len(events)}")
+    print(f"Events: {len(events)}")
+except Exception as e:
+    print(f"ICS failed: {e}")
 
 # ── UPDATE HTML ───────────────────────────────────────────────────────────────
 with open('index.html', 'r', encoding='utf-8') as f:
@@ -160,14 +181,19 @@ if weather_ok:
         html, flags=re.DOTALL
     )
 
+# Buses — inject live data
+html = re.sub(
+    r'var LIVE_BUSES = \[.*?\];',
+    'var LIVE_BUSES = ' + buses_json + ';',
+    html, flags=re.DOTALL
+)
+
 if events:
-    events_json = json.dumps(events, ensure_ascii=False)
     html = re.sub(
         r'var ALISA_EVENTS = \[.*?\];',
-        'var ALISA_EVENTS = ' + events_json + ';',
+        'var ALISA_EVENTS = ' + json.dumps(events, ensure_ascii=False) + ';',
         html, flags=re.DOTALL
     )
-    print("ALISA_EVENTS updated")
 
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html)

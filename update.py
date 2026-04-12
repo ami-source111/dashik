@@ -3,7 +3,8 @@ import urllib.request, json, datetime, re, ssl, time
 TZ = 2  # Prague CEST = UTC+2
 
 GOLEMIO_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTE3MSwiaWF0IjoxNzc1NTkwMjMwLCJleHAiOjExNzc1NTkwMjMwLCJpc3MiOiJnb2xlbWlvIiwianRpIjoiNDI0M2JmMzEtNjdkZS00NTA3LTk1YjEtNzJkYTU2YmJjZWZhIn0.UjHd1nfam7MUNy_JyZ7lAlkmYCc-bJv7qOL_oSD3kOE"
-STOP_ID = "U905Z2"  # Škola Nebušice B → Bořislavka
+STOP_ID = "27975"   # Škola Nebušice (both platforms, filter by headsign)
+STOP_ID_PARAM = "cisIds"  # use cisIds for this stop
 
 now_dt   = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=TZ)))
 now_h    = now_dt.hour
@@ -63,7 +64,7 @@ buses_json = '[]'
 try:
     bus_url = (
         f'https://api.golemio.cz/v2/pid/departureboards'
-        f'?ids={STOP_ID}&minutesAfter=120&limit=12&includeMetroStops=false'
+        f'?{STOP_ID_PARAM}={STOP_ID}&minutesAfter=120&limit=30&includeMetroStops=false'
     )
     req = urllib.request.Request(bus_url, headers={'X-Access-Token': GOLEMIO_TOKEN})
     with urllib.request.urlopen(req, timeout=15) as r:
@@ -74,6 +75,9 @@ try:
     for dep in deps:
         route = dep['route']['short_name']
         if route not in ('161', '312', '907'):
+            continue
+        headsign = dep.get('trip', {}).get('headsign', '')
+        if 'Bořislavka' not in headsign:
             continue
         ts = dep['departure_timestamp'].get('predicted') or dep['departure_timestamp'].get('scheduled', '')
         if not ts:

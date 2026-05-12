@@ -215,3 +215,66 @@ with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html)
 
 print("Done.")
+
+
+# ── SPOTIFY NOW PLAYING ───────────────────────────────────────────────────────
+# To get credentials:
+# 1. Go to https://developer.spotify.com/dashboard → Create app
+# 2. Set redirect URI: http://localhost:8888/callback
+# 3. Run this once locally to get refresh_token:
+#    python3 spotify_auth.py
+# Then fill in the three values below:
+
+SPOTIFY_CLIENT_ID     = ''   # from Spotify app dashboard
+SPOTIFY_CLIENT_SECRET = ''   # from Spotify app dashboard
+SPOTIFY_REFRESH_TOKEN = ''   # obtained via OAuth flow
+
+spotify_data = '{ "track": "", "artist": "", "playing": false }'
+
+if SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET and SPOTIFY_REFRESH_TOKEN:
+    try:
+        import base64
+
+        # Refresh access token
+        creds = base64.b64encode(f'{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}'.encode()).decode()
+        token_req = urllib.request.Request(
+            'https://accounts.spotify.com/api/token',
+            data=b'grant_type=refresh_token&refresh_token=' + SPOTIFY_REFRESH_TOKEN.encode(),
+            headers={'Authorization': f'Basic {creds}', 'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+        with urllib.request.urlopen(token_req, timeout=10) as r:
+            token_data = json.loads(r.read())
+        access_token = token_data['access_token']
+
+        # Get currently playing
+        np_req = urllib.request.Request(
+            'https://api.spotify.com/v1/me/player/currently-playing',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        with urllib.request.urlopen(np_req, timeout=10) as r:
+            if r.status == 200:
+                np = json.loads(r.read())
+                if np.get('is_playing') and np.get('item'):
+                    track  = np['item']['name']
+                    artist = ', '.join(a['name'] for a in np['item']['artists'])
+                    spotify_data = json.dumps({'track': track, 'artist': artist, 'playing': True}, ensure_ascii=False)
+                    print(f"Spotify: {artist} — {track}")
+                else:
+                    print("Spotify: nothing playing")
+            else:
+                print(f"Spotify: status {r.status}")
+    except Exception as e:
+        print(f"Spotify failed: {e}")
+
+# Inject into HTML
+with open('index.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+html = re.sub(
+    r'var SPOTIFY_DATA = \{.*?\};',
+    'var SPOTIFY_DATA = ' + spotify_data + ';',
+    html, flags=re.DOTALL
+)
+
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(html)

@@ -225,9 +225,9 @@ print("Done.")
 #    python3 spotify_auth.py
 # Then fill in the three values below:
 
-SPOTIFY_CLIENT_ID     = ''   # from Spotify app dashboard
-SPOTIFY_CLIENT_SECRET = ''   # from Spotify app dashboard
-SPOTIFY_REFRESH_TOKEN = ''   # obtained via OAuth flow
+SPOTIFY_CLIENT_ID     = 'c77172eea0ec43f1b0c4a0c059c5e3a5'
+SPOTIFY_CLIENT_SECRET = 'e980fd2565d644dabb8d772b05c82792'
+SPOTIFY_REFRESH_TOKEN = 'AQCLlgtfDN6ZX72xGPLjbA01A842nMH4p_NO9hOtdINsYLEhLYrXfDOFTjYooDq60twFZ0AntNtScXumxfayJkSgy5FebGnzjHFqbOBxBaiqW4wEKQdwSSK6PSHKIU249Nw'
 
 spotify_data = '{ "track": "", "artist": "", "playing": false }'
 

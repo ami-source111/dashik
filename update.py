@@ -229,52 +229,34 @@ SPOTIFY_CLIENT_ID     = 'c77172eea0ec43f1b0c4a0c059c5e3a5'
 SPOTIFY_CLIENT_SECRET = 'e980fd2565d644dabb8d772b05c82792'
 SPOTIFY_REFRESH_TOKEN = 'AQCLlgtfDN6ZX72xGPLjbA01A842nMH4p_NO9hOtdINsYLEhLYrXfDOFTjYooDq60twFZ0AntNtScXumxfayJkSgy5FebGnzjHFqbOBxBaiqW4wEKQdwSSK6PSHKIU249Nw'
 
-spotify_data = '{ "track": "", "artist": "", "playing": false }'
+spotify_token = ''
 
 if SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET and SPOTIFY_REFRESH_TOKEN:
     try:
         import base64
-
-        # Refresh access token
         creds = base64.b64encode(f'{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}'.encode()).decode()
         token_req = urllib.request.Request(
             'https://accounts.spotify.com/api/token',
-            data=b'grant_type=refresh_token&refresh_token=' + SPOTIFY_REFRESH_TOKEN.encode(),
+            data=f'grant_type=refresh_token&refresh_token={SPOTIFY_REFRESH_TOKEN}'.encode(),
             headers={'Authorization': f'Basic {creds}', 'Content-Type': 'application/x-www-form-urlencoded'}
         )
         with urllib.request.urlopen(token_req, timeout=10) as r:
             token_data = json.loads(r.read())
-        access_token = token_data['access_token']
-
-        # Get currently playing
-        np_req = urllib.request.Request(
-            'https://api.spotify.com/v1/me/player/currently-playing',
-            headers={'Authorization': f'Bearer {access_token}'}
-        )
-        with urllib.request.urlopen(np_req, timeout=10) as r:
-            if r.status == 200:
-                np = json.loads(r.read())
-                if np.get('is_playing') and np.get('item'):
-                    track  = np['item']['name']
-                    artist = ', '.join(a['name'] for a in np['item']['artists'])
-                    spotify_data = json.dumps({'track': track, 'artist': artist, 'playing': True}, ensure_ascii=False)
-                    print(f"Spotify: {artist} — {track}")
-                else:
-                    print("Spotify: nothing playing")
-            else:
-                print(f"Spotify: status {r.status}")
+        spotify_token = token_data.get('access_token', '')
+        print(f"Spotify token refreshed: {spotify_token[:20]}...")
     except Exception as e:
-        print(f"Spotify failed: {e}")
+        print(f"Spotify token refresh failed: {e}")
 
-# Inject into HTML
+# Inject access token into HTML (JS will use it for realtime polling)
 with open('index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
 html = re.sub(
-    r'var SPOTIFY_DATA = \{.*?\};',
-    'var SPOTIFY_DATA = ' + spotify_data + ';',
-    html, flags=re.DOTALL
+    r"var SPOTIFY_TOKEN = '[^']*';",
+    f"var SPOTIFY_TOKEN = '{spotify_token}';",
+    html
 )
 
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html)
+print("Spotify token injected.")

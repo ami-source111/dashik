@@ -464,16 +464,16 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '10',
-  feels: '7',
-  humidity: '62',
-  wind: '5',
+  temp: '8',
+  feels: '5',
+  humidity: '79',
+  wind: '10',
   code: 3,
-  updatedAt: '14.05 02:08',
-  forecast: [{"label": "Сейчас", "temp": 10, "code": 3}, {"label": "03:00", "temp": 9, "code": 3}, {"label": "04:00", "temp": 9, "code": 3}, {"label": "05:00", "temp": 8, "code": 2}, {"label": "06:00", "temp": 8, "code": 3}, {"label": "07:00", "temp": 8, "code": 3}],
-  tomCode: 80,
+  updatedAt: '14.05 06:39',
+  forecast: [{"label": "Сейчас", "temp": 8, "code": 3}, {"label": "07:00", "temp": 8, "code": 3}, {"label": "08:00", "temp": 10, "code": 3}, {"label": "09:00", "temp": 10, "code": 3}, {"label": "10:00", "temp": 11, "code": 3}, {"label": "11:00", "temp": 12, "code": 3}],
+  tomCode: 3,
   tomMax: '15',
-  tomMin: '9'
+  tomMin: '8'
 };
 // ── END WEATHER DATA ──
 
@@ -484,7 +484,7 @@ var SPOTIFY_TOKEN = '';
 // ── END SPOTIFY DATA ──
 
 // ── BUS DATA (injected by GitHub Actions) ──
-var LIVE_BUSES = [];
+var LIVE_BUSES = [{"route": "312", "time": "06:43", "diff": 4, "delay": 24}, {"route": "161", "time": "06:51", "diff": 11, "delay": 0}, {"route": "312", "time": "06:58", "diff": 19, "delay": 26}, {"route": "161", "time": "07:07", "diff": 27, "delay": 0}, {"route": "161", "time": "07:15", "diff": 35, "delay": 0}, {"route": "161", "time": "07:23", "diff": 43, "delay": 0}, {"route": "161", "time": "07:31", "diff": 51, "delay": 0}, {"route": "312", "time": "07:38", "diff": 58, "delay": 0}, {"route": "161", "time": "07:45", "diff": 65, "delay": 0}, {"route": "312", "time": "07:48", "diff": 68, "delay": 0}, {"route": "161", "time": "07:55", "diff": 75, "delay": 0}, {"route": "161", "time": "08:03", "diff": 83, "delay": 0}, {"route": "161", "time": "08:11", "diff": 91, "delay": 0}, {"route": "161", "time": "08:21", "diff": 101, "delay": 0}, {"route": "161", "time": "08:31", "diff": 111, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {

@@ -464,15 +464,15 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '13',
-  feels: '9',
-  humidity: '51',
-  wind: '15',
+  temp: '15',
+  feels: '12',
+  humidity: '42',
+  wind: '13',
   code: 3,
-  updatedAt: '14.05 12:09',
-  forecast: [{"label": "Сейчас", "temp": 13, "code": 3}, {"label": "13:00", "temp": 14, "code": 3}, {"label": "14:00", "temp": 15, "code": 2}, {"label": "15:00", "temp": 15, "code": 3}, {"label": "16:00", "temp": 15, "code": 3}, {"label": "17:00", "temp": 16, "code": 3}],
-  tomCode: 95,
-  tomMax: '16',
+  updatedAt: '14.05 14:22',
+  forecast: [{"label": "Сейчас", "temp": 15, "code": 3}, {"label": "15:00", "temp": 15, "code": 3}, {"label": "16:00", "temp": 15, "code": 3}, {"label": "17:00", "temp": 15, "code": 3}, {"label": "18:00", "temp": 15, "code": 3}, {"label": "19:00", "temp": 14, "code": 3}],
+  tomCode: 61,
+  tomMax: '15',
   tomMin: '9'
 };
 // ── END WEATHER DATA ──
@@ -484,7 +484,7 @@ var SPOTIFY_TOKEN = '';
 // ── END SPOTIFY DATA ──
 
 // ── BUS DATA (injected by GitHub Actions) ──
-var LIVE_BUSES = [{"route": "161", "time": "12:23", "diff": 13, "delay": 0}, {"route": "161", "time": "12:38", "diff": 28, "delay": 0}, {"route": "312", "time": "12:53", "diff": 43, "delay": 0}, {"route": "161", "time": "13:08", "diff": 58, "delay": 0}, {"route": "161", "time": "13:23", "diff": 73, "delay": 0}, {"route": "312", "time": "13:38", "diff": 88, "delay": 0}, {"route": "161", "time": "13:53", "diff": 103, "delay": 0}, {"route": "312", "time": "14:08", "diff": 118, "delay": 0}];
+var LIVE_BUSES = [{"route": "161", "time": "14:28", "diff": 5, "delay": 0}, {"route": "312", "time": "14:40", "diff": 18, "delay": 157}, {"route": "161", "time": "14:50", "diff": 27, "delay": 0}, {"route": "312", "time": "15:02", "diff": 39, "delay": 0}, {"route": "161", "time": "15:13", "diff": 50, "delay": 0}, {"route": "161", "time": "15:23", "diff": 60, "delay": 0}, {"route": "312", "time": "15:33", "diff": 70, "delay": 0}, {"route": "161", "time": "15:43", "diff": 80, "delay": 0}, {"route": "161", "time": "15:53", "diff": 90, "delay": 0}, {"route": "312", "time": "16:03", "diff": 100, "delay": 0}, {"route": "161", "time": "16:13", "diff": 110, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {

@@ -464,16 +464,16 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '11',
-  feels: '10',
-  humidity: '60',
-  wind: '2',
+  temp: '10',
+  feels: '8',
+  humidity: '71',
+  wind: '1',
   code: 2,
-  updatedAt: '19.05 01:59',
-  forecast: [{"label": "Сейчас", "temp": 12, "code": 3}, {"label": "02:00", "temp": 11, "code": 2}, {"label": "03:00", "temp": 11, "code": 3}, {"label": "04:00", "temp": 11, "code": 2}, {"label": "05:00", "temp": 10, "code": 2}, {"label": "06:00", "temp": 10, "code": 2}],
-  tomCode: 95,
-  tomMax: '21',
-  tomMin: '13'
+  updatedAt: '19.05 06:08',
+  forecast: [{"label": "Сейчас", "temp": 10, "code": 2}, {"label": "07:00", "temp": 11, "code": 3}, {"label": "08:00", "temp": 12, "code": 3}, {"label": "09:00", "temp": 14, "code": 2}, {"label": "10:00", "temp": 16, "code": 1}, {"label": "11:00", "temp": 17, "code": 2}],
+  tomCode: 80,
+  tomMax: '20',
+  tomMin: '12'
 };
 // ── END WEATHER DATA ──
 
@@ -484,7 +484,7 @@ var SPOTIFY_TOKEN = '';
 // ── END SPOTIFY DATA ──
 
 // ── BUS DATA (injected by GitHub Actions) ──
-var LIVE_BUSES = [];
+var LIVE_BUSES = [{"route": "312", "time": "06:13", "diff": 4, "delay": 28}, {"route": "161", "time": "06:23", "diff": 14, "delay": 0}, {"route": "161", "time": "06:33", "diff": 24, "delay": 0}, {"route": "312", "time": "06:43", "diff": 34, "delay": 0}, {"route": "161", "time": "06:51", "diff": 42, "delay": 0}, {"route": "312", "time": "06:58", "diff": 49, "delay": 0}, {"route": "161", "time": "07:07", "diff": 58, "delay": 0}, {"route": "161", "time": "07:15", "diff": 66, "delay": 0}, {"route": "161", "time": "07:23", "diff": 74, "delay": 0}, {"route": "161", "time": "07:31", "diff": 82, "delay": 0}, {"route": "312", "time": "07:38", "diff": 89, "delay": 0}, {"route": "161", "time": "07:45", "diff": 96, "delay": 0}, {"route": "312", "time": "07:48", "diff": 99, "delay": 0}, {"route": "161", "time": "07:55", "diff": 106, "delay": 0}, {"route": "161", "time": "08:03", "diff": 114, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {

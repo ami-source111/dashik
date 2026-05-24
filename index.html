@@ -464,14 +464,14 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '18',
-  feels: '16',
-  humidity: '67',
-  wind: '3',
-  code: 0,
-  updatedAt: '24.05 08:31',
-  forecast: [{"label": "Сейчас", "temp": 17, "code": 1}, {"label": "09:00", "temp": 20, "code": 0}, {"label": "10:00", "temp": 23, "code": 0}, {"label": "11:00", "temp": 25, "code": 1}, {"label": "12:00", "temp": 27, "code": 1}, {"label": "13:00", "temp": 28, "code": 2}],
-  tomCode: 3,
+  temp: '25',
+  feels: '26',
+  humidity: '45',
+  wind: '2',
+  code: 1,
+  updatedAt: '24.05 11:16',
+  forecast: [{"label": "Сейчас", "temp": 25, "code": 1}, {"label": "12:00", "temp": 27, "code": 1}, {"label": "13:00", "temp": 28, "code": 2}, {"label": "14:00", "temp": 28, "code": 2}, {"label": "15:00", "temp": 29, "code": 2}, {"label": "16:00", "temp": 30, "code": 3}],
+  tomCode: 1,
   tomMax: '27',
   tomMin: '16'
 };
@@ -484,7 +484,7 @@ var SPOTIFY_TOKEN = '';
 // ── END SPOTIFY DATA ──
 
 // ── BUS DATA (injected by GitHub Actions) ──
-var LIVE_BUSES = [{"route": "312", "time": "08:38", "diff": 6, "delay": 92}, {"route": "161", "time": "08:57", "diff": 25, "delay": 0}, {"route": "161", "time": "09:17", "diff": 45, "delay": 0}, {"route": "312", "time": "09:37", "diff": 65, "delay": 0}, {"route": "161", "time": "09:57", "diff": 85, "delay": 0}, {"route": "161", "time": "10:17", "diff": 105, "delay": 0}];
+var LIVE_BUSES = [{"route": "161", "time": "11:17", "diff": 0, "delay": 18}, {"route": "312", "time": "11:37", "diff": 20, "delay": 0}, {"route": "161", "time": "11:57", "diff": 40, "delay": 0}, {"route": "161", "time": "12:17", "diff": 60, "delay": 0}, {"route": "312", "time": "12:37", "diff": 80, "delay": 0}, {"route": "161", "time": "12:57", "diff": 100, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {

@@ -464,16 +464,16 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '26',
-  feels: '25',
-  humidity: '44',
-  wind: '15',
-  code: 1,
-  updatedAt: '30.05 13:15',
-  forecast: [{"label": "Сейчас", "temp": 26, "code": 1}, {"label": "14:00", "temp": 27, "code": 1}, {"label": "15:00", "temp": 27, "code": 1}, {"label": "16:00", "temp": 27, "code": 1}, {"label": "17:00", "temp": 26, "code": 1}, {"label": "18:00", "temp": 26, "code": 0}],
-  tomCode: 61,
-  tomMax: '26',
-  tomMin: '15'
+  temp: '',
+  feels: '',
+  humidity: '',
+  wind: '',
+  code: 0,
+  updatedAt: '',
+  forecast: [],
+  tomCode: 0,
+  tomMax: '',
+  tomMin: ''
 };
 // ── END WEATHER DATA ──
 
@@ -484,7 +484,7 @@ var SPOTIFY_TOKEN = '';
 // ── END SPOTIFY DATA ──
 
 // ── BUS DATA (injected by GitHub Actions) ──
-var LIVE_BUSES = [{"route": "161", "time": "13:17", "diff": 1, "delay": 0}, {"route": "312", "time": "13:37", "diff": 21, "delay": 0}, {"route": "161", "time": "13:57", "diff": 41, "delay": 0}, {"route": "161", "time": "14:17", "diff": 61, "delay": 0}, {"route": "312", "time": "14:37", "diff": 81, "delay": 0}, {"route": "161", "time": "14:57", "diff": 101, "delay": 0}];
+var LIVE_BUSES = [];
 // ── END BUS DATA ──
 
 function renderWeather() {
@@ -566,53 +566,40 @@ renderWeather();
 // ─── BUS SCHEDULE ─────────────────────────────────────────
 // Static schedule: route 161 and 312 from Škola Nebušice toward Bořislavka
 // Weekday schedule (approximate, update as needed)
-var BUS_SCHEDULE = {
-  161: {
-    // Weekday: peak ~every 10-15min, off-peak every 30min
-    weekday: [6,17, 6,37, 6,57, 7,17, 7,27, 7,37, 7,47, 7,57, 8,7, 8,17, 8,27, 8,37, 8,47, 8,57,
-              9,17, 9,37, 9,57, 10,17, 10,37, 10,57, 11,17, 11,37, 11,57,
-              12,17, 12,37, 12,57, 13,17, 13,27, 13,37, 13,47, 13,57, 14,7, 14,17, 14,27, 14,37, 14,47, 14,57,
-              15,7, 15,17, 15,27, 15,37, 15,47, 15,57, 16,7, 16,17, 16,27, 16,37, 16,47, 16,57,
-              17,17, 17,37, 17,57, 18,17, 18,37, 18,57, 19,17, 19,57, 20,37,
-              21,17, 21,57, 22,37, 23,17, 24,5],
-    // Weekend: every 40min (:17 and :57), confirmed from PID
-    weekend: [6,57, 7,17, 7,57, 8,17, 8,57, 9,17, 9,57, 10,17, 10,57, 11,17, 11,57,
-              12,17, 12,57, 13,17, 13,57, 14,17, 14,57, 15,17, 15,57, 16,17, 16,57,
-              17,17, 17,57, 18,7, 18,47, 19,17, 19,57, 20,37,
-              21,17, 21,57, 22,37, 23,17, 24,5]
-  },
-  312: {
-    // Weekday
-    weekday: [6,37, 7,7, 7,22, 7,37, 7,52, 8,7, 8,22, 8,37, 8,52,
-              9,7, 9,37, 10,7, 10,37, 11,7, 11,37, 12,7, 12,37,
-              13,7, 13,37, 14,7, 14,22, 14,37, 14,52, 15,7, 15,22, 15,37, 15,52,
-              16,7, 16,22, 16,37, 16,52, 17,7, 17,37, 18,7, 18,37, 19,7, 19,37,
-              20,7, 20,37, 21,35, 22,5, 22,35],
-    // Weekend: every hour at :37, confirmed from PID
-    weekend: [6,37, 7,37, 8,37, 9,37, 10,37, 11,37, 12,37, 13,37, 14,37, 15,37, 16,37,
-              17,37, 18,37, 19,37, 20,37, 21,35, 22,35]
-  },
-  907: {
-    weekday: [25,16],
-    weekend: [25,16]
-  }
-};
+// (static schedule removed — using live Golemio data)
 
-function getNextBusTimes(route, count) {
-  var now = new Date();
-  var isWeekend = now.getDay() === 0 || now.getDay() === 6;
-  var arr = isWeekend ? BUS_SCHEDULE[route].weekend : BUS_SCHEDULE[route].weekday;
-  var nowMin = now.getHours() * 60 + now.getMinutes();
-  var results = [];
-  for (var i = 0; i < arr.length - 1; i += 2) {
-    var depMin = arr[i] * 60 + arr[i+1];
-    if (depMin >= nowMin && results.length < count) {
-      // hours >= 24 mean next-day (e.g. 24:05 = 00:05, 25:16 = 01:16)
-      var dispH = arr[i] >= 24 ? arr[i] - 24 : arr[i];
-      results.push({ h: dispH, m: arr[i+1], diff: depMin - nowMin });
+var GOLEMIO_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTE3MSwiaWF0IjoxNzc1NTkwMjMwLCJleHAiOjExNzc1NTkwMjMwLCJpc3MiOiJnb2xlbWlvIiwianRpIjoiNDI0M2JmMzEtNjdkZS00NTA3LTk1YjEtNzJkYTU2YmJjZWZhIn0.UjHd1nfam7MUNy_JyZ7lAlkmYCc-bJv7qOL_oSD3kOE';
+
+// Live fetch from Golemio API directly (no dependency on Action)
+function fetchBuses() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://api.golemio.cz/v2/pid/departureboards?cisIds=27975&minutesAfter=180&limit=30', true);
+  xhr.setRequestHeader('X-Access-Token', GOLEMIO_TOKEN);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status === 200) {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        var deps = data.departures || [];
+        var buses = [];
+        for (var i = 0; i < deps.length; i++) {
+          var dep = deps[i];
+          var route = dep.route.short_name;
+          if (route !== '161' && route !== '312' && route !== '907') continue;
+          var headsign = (dep.trip && dep.trip.headsign) || '';
+          if (headsign.indexOf('Bořislavka') === -1) continue;
+          var ts = (dep.departure_timestamp && (dep.departure_timestamp.predicted || dep.departure_timestamp.scheduled)) || '';
+          if (!ts) continue;
+          var hhmm = ts.substring(11, 16);
+          var delay = (dep.delay && dep.delay.seconds) || 0;
+          buses.push({ route: route, time: hhmm, delay: delay });
+        }
+        LIVE_BUSES = buses;
+        updateBuses();
+      } catch(e) {}
     }
-  }
-  return results;
+  };
+  xhr.send();
 }
 
 function renderBusTimes(routeNum, elementId) {
@@ -620,42 +607,23 @@ function renderBusTimes(routeNum, elementId) {
   var nextEl = document.getElementById('next-' + routeNum);
   if (!el) return;
 
-  // Filter live buses for this route
-  var times = [];
   var now = new Date();
   var nowMin = now.getHours() * 60 + now.getMinutes();
+  var times = [];
 
-  if (LIVE_BUSES && LIVE_BUSES.length > 0) {
-    var nowMin = now.getHours() * 60 + now.getMinutes();
-    for (var i = 0; i < LIVE_BUSES.length; i++) {
-      var b = LIVE_BUSES[i];
-      if (String(b.route) === String(routeNum) && times.length < 3) {
-        var parts = b.time.split(':');
-        var busMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        var diff = busMin - nowMin;
-        // Handle next-day wrap (bus at 00:05, now is 23:50)
-        if (diff < -720) diff += 24 * 60;
-        // Skip if already departed (more than 1 min ago)
-        if (diff < -1) continue;
-        // Skip if implausibly far (> 3 hours) — stale data from last Action run
-        if (diff > 180) continue;
-        times.push({ route: b.route, time: b.time, diff: Math.max(0, diff), delay: b.delay || 0 });
-      }
-    }
-  } else {
-    // Fallback to static schedule
-    var isWeekend = now.getDay() === 0 || now.getDay() === 6;
-    var arr = isWeekend ? BUS_SCHEDULE[routeNum].weekend : BUS_SCHEDULE[routeNum].weekday;
-    for (var j = 0; j < arr.length - 1; j += 2) {
-      var depMin = arr[j] * 60 + arr[j+1];
-      if (depMin >= nowMin && times.length < 3) {
-        times.push({ route: routeNum, time: formatTime(arr[j], arr[j+1]), diff: depMin - nowMin, delay: 0 });
-      }
+  for (var i = 0; i < LIVE_BUSES.length; i++) {
+    var b = LIVE_BUSES[i];
+    if (String(b.route) === String(routeNum) && times.length < 3) {
+      var parts = b.time.split(':');
+      var busMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+      var diff = busMin - nowMin;
+      if (diff < -720) diff += 24 * 60;
+      if (diff < -1) continue;
+      times.push({ route: b.route, time: b.time, diff: Math.max(0, diff), delay: b.delay || 0 });
     }
   }
 
   var html = '';
-
   if (nextEl) {
     if (times.length === 0) {
       nextEl.className = 'bus-next';
@@ -666,7 +634,7 @@ function renderBusTimes(routeNum, elementId) {
       if (first.diff <= 5) ncls += ' very-soon';
       else if (first.diff <= 15) ncls += ' soon';
       nextEl.className = ncls;
-      var txt = first.diff === 0 ? 'сейчас' : 'через ' + first.diff + ' мин';
+      var txt = first.diff === 0 ? 'сейчас' : 'через ' + first.diff + '\u00a0мин';
       if (first.delay && first.delay > 60) txt += ' (+' + Math.round(first.delay/60) + ')';
       nextEl.textContent = txt;
     }
@@ -686,11 +654,9 @@ function renderBusTimes(routeNum, elementId) {
   el.innerHTML = html;
 }
 
-
 function updateBuses() {
   renderBusTimes(161, 'times-161');
   renderBusTimes(312, 'times-312');
-  // 907 — show row only if there are departures
   var has907 = false;
   if (LIVE_BUSES) {
     for (var i = 0; i < LIVE_BUSES.length; i++) {
@@ -701,18 +667,8 @@ function updateBuses() {
   if (row907) row907.style.display = has907 ? '' : 'none';
   if (has907) renderBusTimes(907, 'times-907');
   var now = new Date();
-  var src = (LIVE_BUSES && LIVE_BUSES.length > 0) ? 'live · ' : 'статично · ';
-  document.getElementById('bus-updated').textContent = src + formatTime(now.getHours(), now.getMinutes());
+  document.getElementById('bus-updated').textContent = 'live · ' + formatTime(now.getHours(), now.getMinutes());
 }
-
-updateBuses();
-setInterval(updateBuses, 60 * 1000);
-
-// ─── ALISA SCHEDULE ──────────────────────────────────────
-// Hardcoded events from Veracross (update as needed)
-// Format: { date: 'YYYY-MM-DD', start: 'HH:MM', end: 'HH:MM', title: '...' }
-// All-day events: omit start/end or use start:'00:00', end:'23:59'
-var ALISA_EVENTS = [{"date": "2026-06-01", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-06-01", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-06-01", "start": "11:10", "end": "12:15", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-06-01", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-06-01", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-06-02", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-06-02", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-06-02", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-06-02", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-06-03", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-06-03", "start": "11:40", "end": "12:35", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-06-03", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-06-03", "start": "14:35", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-06-03", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-06-04", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-04", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-04", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-04", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-04", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}, {"date": "2026-06-04", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-06-05", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-06-05", "start": "11:10", "end": "12:15", "title": "Individuals & Societies", "day": "MS3-BCDEA", "room": "137"}, {"date": "2026-06-05", "start": "13:15", "end": "14:20", "title": "Maths", "day": "MS3-BCDEA", "room": "135"}, {"date": "2026-06-05", "start": "14:25", "end": "15:30", "title": "Science", "day": "MS3-BCDEA", "room": "140"}, {"date": "2026-06-08", "start": "08:45", "end": "09:50", "title": "Maths", "day": "MS4-GHIJF", "room": "135"}, {"date": "2026-06-08", "start": "10:00", "end": "11:05", "title": "Individuals & Societies", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-06-08", "start": "11:10", "end": "12:15", "title": "Spanish G6", "day": "MS4-GHIJF", "room": "186"}, {"date": "2026-06-08", "start": "13:15", "end": "14:20", "title": "Language & Literature", "day": "MS4-GHIJF", "room": "137"}, {"date": "2026-06-08", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS4-GHIJF", "room": ""}, {"date": "2026-06-09", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS5-CDEAB", "room": "186"}, {"date": "2026-06-09", "start": "10:00", "end": "11:05", "title": "PHE", "day": "MS5-CDEAB", "room": ""}, {"date": "2026-06-09", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS5-CDEAB", "room": "Idea Lab (129)"}, {"date": "2026-06-09", "start": "13:15", "end": "14:20", "title": "Science", "day": "MS5-CDEAB", "room": "140"}, {"date": "2026-06-09", "start": "14:25", "end": "15:30", "title": "Eco Club", "day": "MS5-CDEAB", "room": "Band (177)"}, {"date": "2026-06-10", "start": "09:35", "end": "10:30", "title": "Language & Literature", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-06-10", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS6-HIJFG", "room": "137"}, {"date": "2026-06-10", "start": "11:40", "end": "12:35", "title": "Spanish G6", "day": "MS6-HIJFG", "room": "186"}, {"date": "2026-06-10", "start": "13:35", "end": "14:30", "title": "Design", "day": "MS6-HIJFG", "room": "Idea Lab (129)"}, {"date": "2026-06-10", "start": "14:35", "end": "15:30", "title": "Music", "day": "MS6-HIJFG", "room": "Band (177)"}, {"date": "2026-06-10", "start": "15:45", "end": "16:45", "title": "Mountain Biking", "day": "Wednesday", "room": ""}, {"date": "2026-06-11", "start": "08:45", "end": "09:50", "title": "Spanish G6", "day": "MS7-DEABC", "room": "186"}, {"date": "2026-06-11", "start": "10:00", "end": "11:05", "title": "Science", "day": "MS7-DEABC", "room": "140"}, {"date": "2026-06-11", "start": "11:10", "end": "12:15", "title": "Maths", "day": "MS7-DEABC", "room": "135"}, {"date": "2026-06-11", "start": "13:15", "end": "14:20", "title": "Eco Club", "day": "MS7-DEABC", "room": "Band (177)"}, {"date": "2026-06-11", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS7-DEABC", "room": "137"}, {"date": "2026-06-11", "start": "15:40", "end": "16:40", "title": "Sewing Club", "day": "Thursday", "room": "Design Studio (65)"}, {"date": "2026-06-12", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS8-IJFGH", "room": "140"}, {"date": "2026-06-12", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS8-IJFGH", "room": "135"}, {"date": "2026-06-12", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS8-IJFGH", "room": "Band (177)"}, {"date": "2026-06-12", "start": "14:25", "end": "15:30", "title": "Individuals & Societies", "day": "MS8-IJFGH", "room": "137"}, {"date": "2026-06-15", "start": "08:45", "end": "09:50", "title": "Science", "day": "MS9-EABCD", "room": "140"}, {"date": "2026-06-15", "start": "10:00", "end": "11:05", "title": "Language & Literature", "day": "MS9-EABCD", "room": "137"}, {"date": "2026-06-15", "start": "11:10", "end": "12:15", "title": "Eco Club", "day": "MS9-EABCD", "room": "Band (177)"}, {"date": "2026-06-15", "start": "13:15", "end": "14:20", "title": "Design", "day": "MS9-EABCD", "room": "Idea Lab (129)"}, {"date": "2026-06-15", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS9-EABCD", "room": ""}, {"date": "2026-06-16", "start": "10:00", "end": "11:05", "title": "Maths", "day": "MS10-JFGHI", "room": "135"}, {"date": "2026-06-16", "start": "11:10", "end": "12:15", "title": "Language & Literature", "day": "MS10-JFGHI", "room": "137"}, {"date": "2026-06-16", "start": "13:15", "end": "14:20", "title": "Spanish G6", "day": "MS10-JFGHI", "room": "186"}, {"date": "2026-06-16", "start": "14:25", "end": "15:30", "title": "PHE", "day": "MS10-JFGHI", "room": ""}, {"date": "2026-06-17", "start": "10:40", "end": "11:35", "title": "Individuals & Societies", "day": "MS1-ABCDE", "room": "137"}, {"date": "2026-06-17", "start": "11:40", "end": "12:35", "title": "Music", "day": "MS1-ABCDE", "room": "Band (177)"}, {"date": "2026-06-17", "start": "13:35", "end": "14:30", "title": "Science", "day": "MS1-ABCDE", "room": "140"}, {"date": "2026-06-17", "start": "14:35", "end": "15:30", "title": "Maths", "day": "MS1-ABCDE", "room": "135"}, {"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}];
 
 function toDateStr(date) {
   return date.getFullYear() + '-' +
@@ -911,6 +867,9 @@ function nextQuote() {
 showQuote();
 fetchSpotify();
 setInterval(fetchSpotify, 30000);
+
+fetchBuses();
+setInterval(fetchBuses, 60000);
 
 // ─── BIN REMINDER ────────────────────────────────────────
 function checkBinReminder() {

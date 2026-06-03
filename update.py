@@ -176,6 +176,62 @@ try:
 except Exception as e:
     print(f"ICS failed: {e}")
 
+# ── TUYA INDOOR SENSOR ───────────────────────────────────────────────────────
+TUYA_ACCESS_ID     = 'wtnpfrpxnykdwefexvfc'
+TUYA_ACCESS_SECRET = '0d7c3ee67a3c4b6c870d4028ac66fee0'
+TUYA_DEVICE_ID     = 'bf98d7f999ad892e1bruw6'
+TUYA_BASE_URL      = 'https://openapi.tuyaeu.com'
+
+indoor_temp = ''
+indoor_humidity = ''
+indoor_battery = ''
+
+try:
+    import hmac, hashlib
+
+    def tuya_sign(token, path, secret, access_id):
+        ts = str(int(time.time() * 1000))
+        content_hash = hashlib.sha256(b'').hexdigest()
+        str_to_sign = 'GET\n' + content_hash + '\n\n' + path
+        prefix = access_id + token + ts if token else access_id + ts
+        sig = hmac.new(secret.encode(), (prefix + str_to_sign).encode(), hashlib.sha256).hexdigest().upper()
+        return ts, sig
+
+    # Get token
+    path = '/v1.0/token?grant_type=1'
+    ts, sig = tuya_sign('', path, TUYA_ACCESS_SECRET, TUYA_ACCESS_ID)
+    req = urllib.request.Request(TUYA_BASE_URL + path, headers={
+        'client_id': TUYA_ACCESS_ID, 'sign': sig, 't': ts, 'sign_method': 'HMAC-SHA256'
+    })
+    with urllib.request.urlopen(req, timeout=10) as r:
+        token = json.loads(r.read())['result']['access_token']
+
+    # Get device status
+    path2 = f'/v1.0/devices/{TUYA_DEVICE_ID}/status'
+    ts2, sig2 = tuya_sign(token, path2, TUYA_ACCESS_SECRET, TUYA_ACCESS_ID)
+    req2 = urllib.request.Request(TUYA_BASE_URL + path2, headers={
+        'client_id': TUYA_ACCESS_ID, 'access_token': token,
+        'sign': sig2, 't': ts2, 'sign_method': 'HMAC-SHA256'
+    })
+    with urllib.request.urlopen(req2, timeout=10) as r:
+        status = json.loads(r.read())
+
+    for item in status.get('result', []):
+        code_key = item.get('code', '')
+        val = item.get('value', 0)
+        if code_key in ('va_temperature', 'temp_current'):
+            indoor_temp = str(round(val / 10, 1))
+        elif code_key == 'temp_current_calibration':
+            pass  # skip calibration offset
+        elif code_key in ('va_humidity', 'humidity_value'):
+            indoor_humidity = str(val)
+        elif code_key == 'battery_percentage':
+            indoor_battery = str(val)
+
+    print(f"Indoor sensor: {indoor_temp}°C, {indoor_humidity}%, battery {indoor_battery}%")
+except Exception as e:
+    print(f"Tuya sensor failed: {e}")
+
 # ── UPDATE HTML ───────────────────────────────────────────────────────────────
 with open('index.html', 'r', encoding='utf-8') as f:
     html = f.read()
@@ -208,6 +264,20 @@ if events:
     html = re.sub(
         r'var ALISA_EVENTS = \[.*?\];',
         'var ALISA_EVENTS = ' + json.dumps(events, ensure_ascii=False) + ';',
+        html, flags=re.DOTALL
+    )
+
+# Indoor sensor
+if indoor_temp or indoor_humidity:
+    indoor_obj = json.dumps({
+        'temp': indoor_temp,
+        'humidity': indoor_humidity,
+        'battery': indoor_battery,
+        'updatedAt': updated_at,
+    }, ensure_ascii=False)
+    html = re.sub(
+        r'var INDOOR_DATA = \{[^}]*\};',
+        'var INDOOR_DATA = ' + indoor_obj + ';',
         html, flags=re.DOTALL
     )
 

@@ -487,13 +487,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '21',
-  feels: '19',
-  humidity: '40',
-  wind: '8',
+  temp: '19',
+  feels: '18',
+  humidity: '47',
+  wind: '7',
   code: 0,
-  updatedAt: '09.07 22:24',
-  forecast: [{"label": "Сейчас", "temp": 21, "code": 0}, {"label": "23:00", "temp": 20, "code": 0}, {"label": "22:00", "temp": 23, "code": 0}, {"label": "23:00", "temp": 22, "code": 1}],
+  updatedAt: '09.07 23:59',
+  forecast: [{"label": "Сейчас", "temp": 20, "code": 0}, {"label": "23:00", "temp": 22, "code": 1}],
   tomCode: 1,
   tomMax: '27',
   tomMin: '16'
@@ -512,7 +512,7 @@ var SPOTIFY_TOKEN = '';
 
 // ── BUS DATA (injected by GitHub Actions) ──
 var ALISA_EVENTS = [{"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}];
-var LIVE_BUSES = [{"route": "312", "time": "22:35", "diff": 10, "delay": 13}, {"route": "161", "time": "23:15", "diff": 50, "delay": 0}, {"route": "161", "time": "00:05", "diff": 100, "delay": 0}];
+var LIVE_BUSES = [{"route": "161", "time": "00:07", "diff": 8, "delay": 146}];
 // ── END BUS DATA ──
 
 function renderWeather() {

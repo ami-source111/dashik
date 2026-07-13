@@ -487,13 +487,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '27',
+  temp: '26',
   feels: '27',
-  humidity: '34',
-  wind: '4',
+  humidity: '38',
+  wind: '3',
   code: 1,
-  updatedAt: '13.07 21:49',
-  forecast: [{"label": "Сейчас", "temp": 28, "code": 1}, {"label": "22:00", "temp": 27, "code": 1}, {"label": "23:00", "temp": 26, "code": 1}, {"label": "21:00", "temp": 20, "code": 95}, {"label": "22:00", "temp": 20, "code": 80}, {"label": "23:00", "temp": 20, "code": 3}],
+  updatedAt: '13.07 22:58',
+  forecast: [{"label": "Сейчас", "temp": 27, "code": 1}, {"label": "23:00", "temp": 26, "code": 1}, {"label": "22:00", "temp": 20, "code": 80}, {"label": "23:00", "temp": 20, "code": 3}],
   tomCode: 95,
   tomMax: '30',
   tomMin: '20'
@@ -512,7 +512,7 @@ var SPOTIFY_TOKEN = '';
 
 // ── BUS DATA (injected by GitHub Actions) ──
 var ALISA_EVENTS = [{"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}];
-var LIVE_BUSES = [{"route": "161", "time": "22:05", "diff": 15, "delay": 0}, {"route": "312", "time": "22:35", "diff": 45, "delay": 0}, {"route": "161", "time": "23:15", "diff": 85, "delay": 0}];
+var LIVE_BUSES = [{"route": "161", "time": "23:15", "diff": 16, "delay": 0}, {"route": "161", "time": "00:05", "diff": 66, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {

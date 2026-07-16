@@ -487,13 +487,13 @@ updateClock();
 
 // ── WEATHER DATA (injected by GitHub Actions) ──
 var WEATHER_DATA = {
-  temp: '29',
+  temp: '28',
   feels: '29',
-  humidity: '44',
-  wind: '8',
-  code: 1,
-  updatedAt: '16.07 18:43',
-  forecast: [{"label": "Сейчас", "temp": 29, "code": 1}, {"label": "19:00", "temp": 29, "code": 1}, {"label": "20:00", "temp": 28, "code": 2}, {"label": "21:00", "temp": 27, "code": 1}, {"label": "22:00", "temp": 26, "code": 3}, {"label": "23:00", "temp": 25, "code": 3}],
+  humidity: '43',
+  wind: '9',
+  code: 2,
+  updatedAt: '16.07 19:55',
+  forecast: [{"label": "Сейчас", "temp": 29, "code": 1}, {"label": "20:00", "temp": 28, "code": 2}, {"label": "21:00", "temp": 27, "code": 1}, {"label": "22:00", "temp": 26, "code": 3}, {"label": "23:00", "temp": 25, "code": 3}, {"label": "19:00", "temp": 28, "code": 2}],
   tomCode: 80,
   tomMax: '28',
   tomMin: '21'
@@ -512,7 +512,7 @@ var SPOTIFY_TOKEN = '';
 
 // ── BUS DATA (injected by GitHub Actions) ──
 var ALISA_EVENTS = [{"date": "2026-06-18", "start": "08:45", "end": "09:50", "title": "Eco Club", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "10:00", "end": "11:05", "title": "Spanish G6", "day": "MS2-FGHIJ", "room": "186"}, {"date": "2026-06-18", "start": "11:10", "end": "12:15", "title": "Design", "day": "MS2-FGHIJ", "room": "Idea Lab (129)"}, {"date": "2026-06-18", "start": "13:15", "end": "14:20", "title": "Music", "day": "MS2-FGHIJ", "room": "Band (177)"}, {"date": "2026-06-18", "start": "14:25", "end": "15:30", "title": "Language & Literature", "day": "MS2-FGHIJ", "room": "137"}];
-var LIVE_BUSES = [{"route": "312", "time": "18:43", "diff": 0, "delay": 225}, {"route": "161", "time": "18:54", "diff": 11, "delay": -13}, {"route": "161", "time": "19:15", "diff": 31, "delay": 0}, {"route": "312", "time": "19:35", "diff": 51, "delay": 0}, {"route": "161", "time": "19:55", "diff": 71, "delay": 0}, {"route": "161", "time": "20:18", "diff": 94, "delay": 0}, {"route": "161", "time": "20:38", "diff": 114, "delay": 0}];
+var LIVE_BUSES = [{"route": "161", "time": "19:55", "diff": 0, "delay": 39}, {"route": "161", "time": "20:18", "diff": 22, "delay": 0}, {"route": "161", "time": "20:38", "diff": 42, "delay": 0}, {"route": "161", "time": "21:06", "diff": 70, "delay": 0}, {"route": "312", "time": "21:35", "diff": 99, "delay": 0}];
 // ── END BUS DATA ──
 
 function renderWeather() {
